@@ -8,19 +8,19 @@
 </head>
 <body>
 
- 
-       ENCABEZADO Y NAVEGACIÓN
- 
+  <!-- ==========================================
+        ENCABEZADO Y NAVEGACIÓN
+  =========================================== -->
   <header id="navbar">
     <div class="nav-contenido">
       <a href="index.html" class="logo" aria-label="Inicio de RouteView">
-         <img src="../images/3logo.png" alt="Logo de RouteView"> 
+         <img src="images/3logo.png" alt="Logo de RouteView"> 
          Route<span>View</span>
       </a>
 
       <nav>
         <ul class="nav-links">
-          <li><a href="index.html">Inicio</a></li>
+          <li><a href="index.html" class="active">Inicio</a></li>
           <li><a href="rutas.html">Rutas</a></li>
           <li><a href="registro.html">Mis Rutas</a></li>
         </ul>
@@ -43,7 +43,7 @@
     <!-- Menú móvil -->
     <div id="menu-movil" class="menu-movil" role="navigation" aria-label="Menú móvil">
       <ul>
-        <li><a href="index.html">Inicio</a></li>
+        <li><a href="index.html" class="active">Inicio</a></li>
         <li><a href="rutas.html">Rutas</a></li>
         <li><a href="registro.html">Mis Rutas</a></li>
       </ul>
@@ -53,7 +53,7 @@
   <main>
 
     <!-- ==========================================
-         HERO / SECCIÓN PRINCIPAL
+          HERO / SECCIÓN PRINCIPAL
     =========================================== -->
     <section class="hero-wrapper" aria-labelledby="titulo-hero">
     <div class="hero">
@@ -78,30 +78,36 @@
         </div>
       </div>
 
-      <div class="hero-imagen" aria-hidden="true">
-        <div class="mapa-simulado">
-          <div class="mapa-titulo"> Mapa en vivo</div>
-          <div class="mapa-rutas">
-            <div class="linea-ruta naranja"></div>
-            <div class="bus-icono bus-1"><img src="../images/icon-bus.svg" alt=""></div>
-            <div class="linea-ruta verde"></div>
-             <div class="bus-icono bus-2"><img src="../images/icon-bus.svg" alt=""></div>
-            <div class="linea-ruta azul"></div>
-            <div class="bus-icono bus-3"><img src="../images/icon-bus.svg" alt=""></div>
+      <!-- Área de Mapa Integrada -->
+      <div class="hero-imagen">
+        <div class="mapa-simulado" style="padding: 15px; display: flex; flex-direction: column; height: 100%; box-sizing: border-box;">
+          
+          <!-- Encabezado con estado dinámico -->
+          <div class="mapa-titulo" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px;">
+            <span style="font-weight: bold; font-size: 0.95rem;">📍 Mapa en vivo</span>
+            <span id="stats-buses" style="font-size: 0.75rem; background-color: #22c55e; color: white; padding: 3px 8px; border-radius: 12px; font-weight: 600;">
+              Conectando...
+            </span>
+          </div>
 
+          <!-- Contenedor interactivo de Google Maps -->
+          <div id="map" style="width: 100%; height: 320px; border-radius: 8px; overflow: hidden; background: #e2e8f0;"></div>
+
+          <!-- Leyenda del mapa -->
+          <div class="mapa-leyenda" style="margin-top: 10px; display: flex; gap: 12px; font-size: 0.85rem; align-items: center;">
+            <span><span class="punto verde"></span> Tráfico fluido</span>
+            <span><span class="punto naranja"></span> Tráfico pesado</span>
+            <span><span class="punto azul"></span> Unidad activa</span>
           </div>
-          <div class="mapa-leyenda">
-            <span class="punto naranja"></span> Ruta 42
-            <span class="punto verde"></span> Ruta 17
-            <span class="punto azul"></span> Ruta 8
-          </div>
+
         </div>
       </div>
+
     </div><!-- fin .hero -->
     </section><!-- fin .hero-wrapper -->
 
     <!-- ==========================================
-         PRESENTACIÓN DEL PROBLEMA
+          PRESENTACIÓN DEL PROBLEMA
     =========================================== -->
     <section class="seccion-problema" aria-labelledby="titulo-problema">
       <div class="contenedor">
@@ -146,7 +152,7 @@
     </section>
 
     <!-- ==========================================
-         PÚBLICO OBJETIVO
+          PÚBLICO OBJETIVO
     =========================================== -->
     <section class="seccion-publico" aria-labelledby="titulo-publico">
       <div class="contenedor">
@@ -160,7 +166,7 @@
         <ul class="publico-lista">
           <li class="publico-item">
             <span class="publico-icono" aria-hidden="true">
-              <img src="../images/icon-estudiantes.svg" alt="">
+              <img src="images/icon-estudiantes.svg" alt="">
             </span>
             <div>
               <h3>Estudiantes universitarios</h3>
@@ -169,7 +175,7 @@
           </li>
           <li class="publico-item">
             <span class="publico-icono" aria-hidden="true">
-              <img src="../images/icon-trabajadores.svg" alt="logo trabajadores">
+              <img src="images/icon-trabajadores.svg" alt="logo trabajadores">
             </span>
             <div>
               <h3>Trabajadores diarios</h3>
@@ -178,7 +184,7 @@
           </li>
           <li class="publico-item">
             <span class="publico-icono" aria-hidden="true">
-              <img src="../images/icon-adultos-mayores.svg" alt="">
+              <img src="images/icon-adultos-mayores.svg" alt="">
             </span>
             <div>
               <h3>Adultos mayores</h3>
@@ -187,7 +193,7 @@
           </li>
           <li class="publico-item">
             <span class="publico-icono" aria-hidden="true">
-              <img src="../images/icon-turistas.svg" alt="">
+              <img src="images/icon-turistas.svg" alt="">
             </span>
             <div>
               <h3>Turistas y visitantes</h3>
@@ -200,7 +206,7 @@
     </section>
 
     <!-- ==========================================
-         PROPUESTA DE SOLUCIÓN
+          PROPUESTA DE SOLUCIÓN
     =========================================== -->
     <section class="seccion-solucion" aria-labelledby="titulo-solucion">
       <div class="contenedor">
@@ -215,7 +221,7 @@
 
           <article class="funcion-card">
             <span class="funcion-icono" aria-hidden="true">
-              <img src="../images/icon-ubicacion.svg" alt="imagen ubicacion">
+              <img src="images/icon-ubicacion.svg" alt="imagen ubicacion">
             </span>
             <h3>Ubicación en tiempo real</h3>
             <p>Consulta la posición actual de los buses en el mapa y sabe en qué parada se encuentran.</p>
@@ -223,7 +229,7 @@
 
           <article class="funcion-card">
             <span class="funcion-icono" aria-hidden="true">
-              <img src="../images/icon-busqueda.svg" alt="">
+              <img src="images/icon-busqueda.svg" alt="">
             </span>
             <h3>Búsqueda y filtros</h3>
             <p>Busca por número de ruta, nombre o categoría. Filtra por estado para ver solo rutas activas.</p>
@@ -231,7 +237,7 @@
 
           <article class="funcion-card">
             <span class="funcion-icono" aria-hidden="true">
-              <img src="../images/icon-guardar-rutas.svg" alt="">
+              <img src="images/icon-guardar-rutas.svg" alt="">
             </span>
             <h3>Guarda tus rutas</h3>
             <p>Marca las rutas que usas con frecuencia y accede a ellas rápidamente desde cualquier sesión.</p>
@@ -239,7 +245,7 @@
 
           <article class="funcion-card">
             <span class="funcion-icono" aria-hidden="true">
-              <img src="../images/icon-alertas.svg" alt="imagen alertas">
+              <img src="images/icon-alertas.svg" alt="imagen alertas">
             </span>
             <h3>Alertas de estado</h3>
             <p>Recibe información sobre rutas con servicio limitado, desvíos o suspensiones temporales.</p>
@@ -247,7 +253,7 @@
 
           <article class="funcion-card">
             <span class="funcion-icono" aria-hidden="true">
-              <img src="../images/icon-horarios.svg" alt="">
+              <img src="images/icon-horarios.svg" alt="">
             </span>
             <h3>Horarios actualizados</h3>
             <p>Consulta los horarios de operación y la frecuencia de cada ruta disponible.</p>
@@ -255,7 +261,7 @@
 
           <article class="funcion-card">
             <span class="funcion-icono" aria-hidden="true">
-              <img src="../images/icon-dispositivos.svg" alt="">
+              <img src="images/icon-dispositivos.svg" alt="">
             </span>
             <h3>Funciona en cualquier dispositivo</h3>
             <p>Diseño adaptado a celular, tablet y computadora. Úsalo desde donde estés.</p>
@@ -267,7 +273,7 @@
     </section>
 
     <!-- ==========================================
-         CÓMO EMPEZAR (Flujo de uso)
+          CÓMO EMPEZAR (Flujo de uso)
     =========================================== -->
     <section class="seccion-como" aria-labelledby="titulo-como">
       <div class="contenedor">
@@ -308,13 +314,13 @@
   </main>
 
   <!-- ==========================================
-       PIE DE PÁGINA
+        PIE DE PÁGINA
   =========================================== -->
   <footer>
     <div class="contenedor footer-contenido">
       <div class="footer-marca">
         <p class="logo">
-          <img src="../images/3logo.png" alt="">Route<span>View</span></p>
+          <img src="images/3logo.png" alt="">Route<span>View</span></p>
         <p>Movilidad urbana inteligente para todos.</p>
       </div>
 
@@ -329,7 +335,7 @@
 
       <div class="footer-contacto">
         <h4>Contacto</h4>
-       <p>routeview@rview.app</p>
+        <p>routeview@rview.app</p>
         <p>Alajuela, Costa Rica</p>
       </div>
     </div>
@@ -342,8 +348,18 @@
     </div>
   </footer>
 
-  <!-- JS externo -->
+  <!-- ==========================================
+        SCRIPTS DE JS (ORDEN CRÍTICO)
+  =========================================== -->
+  <!-- 1. Cargar primero la lógica global del JS -->
   <script src="js/main.js"></script>
+
+  <!-- 2. Cargar API de Google Maps con defer para ejecutar initMap cuando todo esté listo -->
+  <script 
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxnyBScS06-vUGMPbZmm0DLIPdtuxTVoI&callback=initMap" 
+    async
+    defer>
+  </script>
 
 </body>
 </html>

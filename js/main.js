@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================================================================
     const contenedorCatalogo = document.getElementById('contenedor-catalogo-rutas');
     
-    // Verificamos si el contenedor único existe en el HTML
     if (contenedorCatalogo) {
         const inputBusqueda = document.getElementById('input-busqueda');
         const filtroCategoria = document.getElementById('filtro-categoria');
@@ -32,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let todasLasRutas = []; 
 
-        // RUTA CORREGIDA: Apunta exactamente a 'rutas.json' dentro de 'data'
         fetch('./data/rutas.json')
             .then(response => {
                 if (!response.ok) throw new Error('No se pudo cargar el archivo rutas.json');
@@ -47,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 contenedorCatalogo.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: red; font-weight: bold; padding: 20px;">Error al conectar con la base de datos de rutas (rutas.json). Verifica que el archivo esté guardado con ese nombre exacto dentro de la carpeta 'data'.</p>`;
             });
 
-        // Función para renderizar las tarjetas dinámicamente modificando el DOM
         function renderizarTarjetas(rutas) {
             contenedorCatalogo.innerHTML = ''; 
 
@@ -62,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (ruta.estado === 'Demorado') colorEstado = '#ffc107';
                 if (ruta.estado === 'Fuera de Horario') colorEstado = '#dc3545';
 
-                const listaParadas = ruta.paradas.map(p => `<li> <img src="../images/icon-parada-pin.svg" alt="" style="width: 18px; height: 18px; flex-shrink: 0;">
+                const listaParadas = ruta.paradas.map(p => `<li> <img src="images/icon-parada-pin.svg" alt="" style="width: 18px; height: 18px; flex-shrink: 0;">
                 ${p.nombre} (${p.tiempoEstimado} min)</li>`).join('');
 
                 const tarjeta = document.createElement('div');
@@ -89,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 contenedorCatalogo.appendChild(tarjeta);
             });
 
-            // Asociar eventos a los botones de favoritos recién creados
             const botonesFav = document.querySelectorAll('.btn-agregar-fav');
             botonesFav.forEach(boton => {
                 boton.addEventListener('click', (e) => {
@@ -100,7 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Sistema de Filtros Combinados
         function filtrarCatalogo() {
             const textoBusqueda = inputBusqueda.value.toLowerCase().trim();
             const catSeleccionada = filtroCategoria.value;
@@ -165,7 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         cargarFavoritosDOM();
 
-        // Validaciones en tiempo real
         txtAlias.addEventListener('input', () => validarCampoVacio(txtAlias, 'error-alias', 'El alias es obligatorio para personalizar la ruta.'));
         txtBus.addEventListener('input', () => validarCampoVacio(txtBus, 'error-bus', 'Debe indicar el número o nombre oficial de la línea.'));
         selCategoria.addEventListener('change', () => validarCampoVacio(selCategoria, 'error-categoria', 'Seleccione una categoría válida.'));
@@ -241,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (favoritos.length === 0) {
                 contenedorFavoritas.innerHTML = `
                     <div class="estado-vacio" style="text-align: center; color: #777; padding: 40px 20px;">
-                        <p style="font-size: 3rem; margin-bottom: 10px;"> <img src="../images/icon-sin-resultados.svg" alt="">  </p>
+                        <p style="font-size: 3rem; margin-bottom: 10px;"> 🚫 </p>
                         <p>Aún no has registrado rutas personalizadas.</p>
                     </div>`;
                 return;
@@ -257,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 item.innerHTML = `
                     <h3 style="margin: 0 0 5px 0; color: #00C48C; font-size: 1.15rem;">${fav.alias}</h3>
                     <p style="margin: 0 0 5px 0; font-weight: bold; font-size: 0.9rem;"> ${fav.linea} <span style="font-size:0.75rem; font-weight:normal; background:#cbd5e1; padding: 2px 6px; border-radius:3px; margin-left:5px;">${fav.categoria}</span></p>
-                    <p style="margin: 0 0 8px 0; font-size: 0.85rem; color: #475569;"> <img src="../images/icon-parada-pin.svg" alt="" style="width: 18px; height: 18px; flex-shrink: 0;"> <strong>Abordaje:</strong> ${fav.parada}</p>
+                    <p style="margin: 0 0 8px 0; font-size: 0.85rem; color: #475569;"> <strong>Abordaje:</strong> ${fav.parada}</p>
                     <p style="margin: 0; font-size: 0.85rem; color: #64748b; font-style: italic;">"${fav.descripcion}"</p>
                     <button class="btn-eliminar-individual" data-id="${fav.id}" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: #dc3545; font-size: 1.1rem; cursor: pointer;" title="Eliminar de favoritos">
                         ❌
@@ -274,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         let favs = JSON.parse(localStorage.getItem('misRutasFavoritas')) || [];
                         favs = favs.filter(f => f.id !== idEliminar);
                         localStorage.setItem('misRutasFavoritas', JSON.stringify(favs));
-                        cargarFavoritosDOM(); // Función corregida
+                        cargarFavoritosDOM();
                     }
                 });
             });
@@ -295,3 +289,158 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+// =========================================================================
+// 3. LÓGICA DE GOOGLE MAPS API & MONITOREO DE BUSES EN TIEMPO REAL
+// =========================================================================
+let map;
+const markers = {};
+
+function initMap() {
+    const mapElement = document.getElementById("map");
+    if (!mapElement) return;
+
+    map = new google.maps.Map(mapElement, {
+        center: { lat: 9.9333, lng: -84.0833 },
+        zoom: 13,
+        disableDefaultUI: false,
+    });
+
+    fetchBuses();
+    setInterval(fetchBuses, 5000);
+}
+
+async function fetchBuses() {
+    const statsLabel = document.getElementById('stats-buses');
+
+    try {
+        const response = await fetch('http://localhost:3000/api/buses');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.status === 'ok' || Array.isArray(result)) {
+            const dataBuses = result.data || result;
+            if (statsLabel) {
+                statsLabel.innerText = `${dataBuses.length} buses en tiempo real`;
+                statsLabel.style.backgroundColor = '#22c55e';
+            }
+            renderBuses(dataBuses);
+        }
+    } catch (error) {
+        console.warn('⚠️ No se pudo conectar con el servidor Node.js (http://localhost:3000).', error);
+        
+        if (statsLabel) {
+            statsLabel.innerText = "Error de conexión con el backend";
+            statsLabel.style.backgroundColor = '#ef4444';
+        }
+    }
+}
+
+// Convierte "9.58.99836.N" -> 9.5899836
+function parsearLatitud(valor) {
+    if (!valor) return null;
+    let str = valor.toString().trim().toUpperCase().replace(/[NSEW]/g, '');
+    
+    // Si viene como "9.58.99836", dejamos el primer punto y quitamos el segundo -> "9.5899836"
+    let partes = str.split('.');
+    if (partes.length > 2) {
+        str = partes[0] + '.' + partes.slice(1).join('');
+    }
+
+    let lat = parseFloat(str);
+    return isNaN(lat) ? null : Math.abs(lat);
+}
+
+// Convierte "84.0.8921814.W" -> -84.08921814
+function parsearLongitud(valor) {
+    if (!valor) return null;
+    let str = valor.toString().trim().toUpperCase().replace(/[NSEW]/g, '');
+
+    // Si viene como "84.0.8921814", dejamos el primer punto y quitamos el segundo -> "84.08921814"
+    let partes = str.split('.');
+    if (partes.length > 2) {
+        str = partes[0] + '.' + partes.slice(1).join('');
+    }
+
+    let lng = parseFloat(str);
+    return isNaN(lng) ? null : -Math.abs(lng); // SIEMPRE NEGATIVA (Oeste)
+}
+
+function renderBuses(buses) {
+    if (!Array.isArray(buses) || !map) return;
+
+    const bounds = new google.maps.LatLngBounds();
+    let busesDibujados = 0;
+
+    buses.forEach((bus, index) => {
+        const busId = bus.bus_id || bus.id_bus || bus.id || (index + 1);
+
+        const latRaw = bus.latitud ?? bus.lat;
+        const lngRaw = bus.longitud ?? bus.lng;
+
+        const lat = parsearLatitud(latRaw);
+        const lng = parsearLongitud(lngRaw);
+
+        // Validar que la coordenada esté dentro del rango de Costa Rica (Lat ~9.x, Lng ~ -84.x)
+        if (!lat || !lng || lat < 8 || lat > 12 || lng > -82 || lng < -86) return;
+
+        const position = { lat: lat, lng: lng };
+
+        const iconoPunto = {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 7,
+            fillColor: "#007AFF",
+            fillOpacity: 0.9,
+            strokeColor: "#FFFFFF",
+            strokeWeight: 2,
+        };
+
+        if (markers[busId]) {
+            markers[busId].setPosition(position);
+        } else {
+            const marker = new google.maps.Marker({
+                position: position,
+                map: map,
+                title: `Unidad #${busId}`,
+                icon: iconoPunto
+            });
+
+            const lugar = bus.lugar || bus.ruta || 'En recorrido';
+            const vel = bus.velocidad ?? 0;
+            const abordo = bus.pasajeros_abordo ?? 0;
+
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div style="color: #1e293b; padding: 6px; font-family: system-ui, sans-serif;">
+                        <h4 style="margin: 0 0 6px 0; color: #007AFF; font-size: 0.95rem;">
+                            Unidad #${busId}
+                        </h4>
+                        <p style="margin: 3px 0; font-size: 0.85rem;">📍 <b>Sector/Ruta:</b> ${lugar}</p>
+                        <p style="margin: 3px 0; font-size: 0.85rem;">⚡ <b>Velocidad:</b> ${vel} km/h</p>
+                        <p style="margin: 3px 0; font-size: 0.85rem;">👥 <b>A bordo:</b> ${abordo} pasajeros</p>
+                    </div>
+                `
+            });
+
+            marker.addListener('click', () => {
+                infoWindow.open(map, marker);
+            });
+
+            markers[busId] = marker;
+        }
+
+        bounds.extend(position);
+        busesDibujados++;
+    });
+
+    if (busesDibujados > 0 && !window.mapaAjustado) {
+        map.fitBounds(bounds);
+        window.mapaAjustado = true;
+    }
+}
+
+window.initMap = initMap;

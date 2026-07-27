@@ -1,0 +1,26 @@
+{
+  "name": "routeview-main-1",
+  "version": "1.0.0",
+  "description": "Sitio web que permite consultar rutas de bus, ubicación en tiempo real,\r horarios y guardar rutas favoritas.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AnahiMia/RouteView-main.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/AnahiMia/RouteView-main/issues"
+  },
+  "homepage": "https://github.com/AnahiMia/RouteView-main#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mssql": "^12.7.0"
+  }
+}
