@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RouteView – Catálogo de Rutas</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/dark-mode.css" />
 </head>
 <body>
 
@@ -62,27 +63,17 @@
           <input 
             type="search" 
             id="input-busqueda" 
-            placeholder="Buscar por número de ruta o parada (ej. UTN, Alajuela)..." 
+            placeholder="Buscar por nombre o número de ruta (ej. 105, San José)..." 
             style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem;"
           >
-        </div>
-
-        <div style="min-width: 180px;">
-          <label for="filtro-categoria" style="display: block; font-weight: bold; margin-bottom: 6px; color: #555; font-size: 0.9rem;">Categoría:</label>
-          <select id="filtro-categoria" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; background-color: #fff; font-size: 1rem;">
-            <option value="todos">Todas las categorías</option>
-            <option value="Regular">Servicio Regular</option>
-            <option value="Express">Servicio Express</option>
-          </select>
         </div>
 
         <div style="min-width: 180px;">
           <label for="filtro-estado" style="display: block; font-weight: bold; margin-bottom: 6px; color: #555; font-size: 0.9rem;">Estado del servicio:</label>
           <select id="filtro-estado" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; background-color: #fff; font-size: 1rem;">
             <option value="todos">Todos los estados</option>
-            <option value="Activo">Activo (Normal)</option>
-            <option value="Demorado">Demorado / Tránsito pesado</option>
-            <option value="Fuera de Horario">Fuera de Horario</option>
+            <option value="Activo">Activo (con unidades)</option>
+            <option value="Sin unidades">Sin unidades reportando</option>
           </select>
         </div>
 
@@ -137,5 +128,8 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <script src="js/eta-utils.js"></script>
+  <script src="js/dark-mode.js"></script>
+  <script src="js/filtro-ruta.js"></script>
 </body>
 </html>

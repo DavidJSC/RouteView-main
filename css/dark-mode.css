@@ -1,0 +1,57 @@
+/* =========================================================================
+   MODO OSCURO — RouteView
+   Truco de inversión de color aplicado solo a las secciones "claras" del
+   sitio (el header, el hero y el footer ya son oscuros de por sí, así que
+   se excluyen para no invertirlos también).
+   ========================================================================= */
+
+html.dark-mode .seccion-problema,
+html.dark-mode .seccion-publico,
+html.dark-mode .seccion-solucion,
+html.dark-mode .seccion-como,
+html.dark-mode .contenedor-principal,
+html.dark-mode .tarjeta-formulario,
+html.dark-mode .tarjeta-registros,
+html.dark-mode .tarjeta-favorita-guardada,
+html.dark-mode .tarjeta-ruta,
+html.dark-mode .barra-filtros,
+html.dark-mode .cargando-datos,
+html.dark-mode .sin-resultados,
+html.dark-mode .alerta-exito {
+    filter: invert(1) hue-rotate(180deg);
+}
+
+/* Las imágenes/íconos dentro de esas secciones se re-invierten para que
+   se vean normales (si no, saldrían con colores raros) */
+html.dark-mode .seccion-problema img,
+html.dark-mode .seccion-publico img,
+html.dark-mode .seccion-solucion img,
+html.dark-mode .seccion-como img,
+html.dark-mode .contenedor-principal img,
+html.dark-mode .tarjeta-formulario img,
+html.dark-mode .tarjeta-registros img,
+html.dark-mode .tarjeta-ruta img {
+    filter: invert(1) hue-rotate(180deg);
+}
+
+/* Botón de modo oscuro */
+#btn-modo-oscuro {
+    background: transparent;
+    border: 1.5px solid currentColor;
+    color: inherit;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-left: 12px;
+    transition: background 0.2s ease;
+}
+
+#btn-modo-oscuro:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Transición suave al cambiar de modo */
+html {
+    transition: filter 0.3s ease;
+}
