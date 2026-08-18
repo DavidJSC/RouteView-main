@@ -1,369 +1,395 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RouteView – Seguimiento de Rutas de Buses</title>
-  <link rel="stylesheet" href="css/styles.css" />
-  <link rel="stylesheet" href="css/dark-mode.css" />
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RouteView – Seguimiento de Rutas de Buses</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/dark-mode.css" />
+  </head>
+  <body>
 
-  <!-- ==========================================
+    <!-- ==========================================
         ENCABEZADO Y NAVEGACIÓN
   =========================================== -->
-  <header id="navbar">
-    <div class="nav-contenido">
-      <a href="index.html" class="logo" aria-label="Inicio de RouteView">
-         <img src="images/3logo.png" alt="Logo de RouteView"> 
-         Route<span>View</span>
-      </a>
+    <header id="navbar">
+      <div class="nav-contenido">
+        <a href="index.html" class="logo" aria-label="Inicio de RouteView">
+          <img src="images/3logo.png" alt="Logo de RouteView">
+          Route<span>View</span>
+        </a>
 
-      <nav>
-        <ul class="nav-links">
+        <nav>
+          <ul class="nav-links">
+            <li><a href="index.html" class="active">Inicio</a></li>
+            <li><a href="rutas.html">Rutas</a></li>
+            <li><a href="registro.html">Mis Rutas</a></li>
+          </ul>
+        </nav>
+
+        <button
+          id="hamburger"
+          class="hamburger"
+          aria-label="Abrir menú"
+          aria-expanded="false"
+          aria-controls="menu-movil">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+      </div>
+
+      <!-- Menú móvil -->
+      <div id="menu-movil" class="menu-movil" role="navigation"
+        aria-label="Menú móvil">
+        <ul>
           <li><a href="index.html" class="active">Inicio</a></li>
           <li><a href="rutas.html">Rutas</a></li>
           <li><a href="registro.html">Mis Rutas</a></li>
         </ul>
-      </nav>
+      </div>
+    </header>
 
-      <button
-        id="hamburger"
-        class="hamburger"
-        aria-label="Abrir menú"
-        aria-expanded="false"
-        aria-controls="menu-movil"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+    <main>
 
-    </div>
-
-    <!-- Menú móvil -->
-    <div id="menu-movil" class="menu-movil" role="navigation" aria-label="Menú móvil">
-      <ul>
-        <li><a href="index.html" class="active">Inicio</a></li>
-        <li><a href="rutas.html">Rutas</a></li>
-        <li><a href="registro.html">Mis Rutas</a></li>
-      </ul>
-    </div>
-  </header>
-
-  <main>
-
-    <!-- ==========================================
+      <!-- ==========================================
           HERO / SECCIÓN PRINCIPAL
     =========================================== -->
-    <section class="hero-wrapper" aria-labelledby="titulo-hero">
-    <div class="hero">
-      <div class="hero-contenido">
+      <section class="hero-wrapper" aria-labelledby="titulo-hero">
+        <div class="hero">
+          <div class="hero-contenido">
 
-        <span class="etiqueta-verde"> Seguimiento en tiempo real</span>
+            <span class="etiqueta-verde"> Seguimiento en tiempo real</span>
 
-        <h1 id="titulo-hero">
-          Sabe exactamente<br />
-          <span class="texto-verde">dónde está tu bus.</span>
-        </h1>
+            <h1 id="titulo-hero">
+              Sabe exactamente<br />
+              <span class="texto-verde">dónde está tu bus.</span>
+            </h1>
 
-        <p>
-          RouteView muestra la ubicación en vivo de cada ruta de bus,
-          tiempos de llegada estimados y alertas de desvíos.
-          Sin adivinar, sin esperar de más.
-        </p>
+            <p>
+              RouteView muestra la ubicación en vivo de cada ruta de bus,
+              tiempos de llegada estimados y alertas de desvíos.
+              Sin adivinar, sin esperar de más.
+            </p>
 
-        <div class="hero-botones">
-          <a href="rutas.html" class="btn btn-primario">Ver rutas disponibles</a>
-          <a href="registro.html" class="btn btn-secundario">Guardar mis rutas →</a>
-        </div>
-      </div>
-
-      <!-- Área de Mapa Integrada -->
-      <div class="hero-imagen">
-        <div class="mapa-simulado" style="padding: 15px; display: flex; flex-direction: column; height: 100%; box-sizing: border-box;">
-          
-          <!-- Encabezado con estado dinámico -->
-          <div class="mapa-titulo" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px;">
-            <span style="font-weight: bold; font-size: 0.95rem;">📍 Mapa en vivo</span>
-            <span id="stats-buses" style="font-size: 0.75rem; background-color: #22c55e; color: white; padding: 3px 8px; border-radius: 12px; font-weight: 600;">
-              Conectando...
-            </span>
+            <div class="hero-botones">
+              <a href="rutas.html" class="btn btn-primario">Ver rutas
+                disponibles</a>
+              <a href="registro.html" class="btn btn-secundario">Guardar mis
+                rutas →</a>
+            </div>
           </div>
 
-          <!-- Contenedor interactivo de Google Maps -->
-          <div id="map" style="width: 100%; height: 480px; border-radius: 8px; overflow: hidden; background: #e2e8f0;"></div>
+          <!-- Área de Mapa Integrada -->
+          <div class="hero-imagen">
+            <div class="mapa-simulado"
+              style="padding: 15px; display: flex; flex-direction: column; height: 100%; box-sizing: border-box;">
 
-          <!-- Leyenda del mapa -->
-          <div class="mapa-leyenda" style="margin-top: 10px; display: flex; gap: 12px; font-size: 0.85rem; align-items: center;">
-            <span><span class="punto verde"></span> Tráfico fluido</span>
-            <span><span class="punto naranja"></span> Tráfico pesado</span>
-            <span><span class="punto azul"></span> Unidad activa</span>
+              <!-- Encabezado con estado dinámico -->
+              <div class="mapa-titulo"
+                style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px;">
+                <span style="font-weight: bold; font-size: 0.95rem;">📍 Mapa en
+                  vivo</span>
+                <span id="stats-buses"
+                  style="font-size: 0.75rem; background-color: #22c55e; color: white; padding: 3px 8px; border-radius: 12px; font-weight: 600;">
+                  Conectando...
+                </span>
+              </div>
+
+              <!-- Contenedor interactivo de Google Maps -->
+              <div id="map"
+                style="width: 100%; height: 480px; border-radius: 8px; overflow: hidden; background: #e2e8f0;"></div>
+
+              <!-- Leyenda del mapa -->
+              <div class="mapa-leyenda"
+                style="margin-top: 10px; display: flex; gap: 12px; font-size: 0.85rem; align-items: center;">
+                <span><span class="punto verde"></span> Tráfico fluido</span>
+                <span><span class="punto naranja"></span> Tráfico pesado</span>
+                <span><span class="punto azul"></span> Unidad activa</span>
+              </div>
+
+            </div>
           </div>
 
-        </div>
-      </div>
+        </div><!-- fin .hero -->
+      </section><!-- fin .hero-wrapper -->
 
-    </div><!-- fin .hero -->
-    </section><!-- fin .hero-wrapper -->
-
-    <!-- ==========================================
+      <!-- ==========================================
           PRESENTACIÓN DEL PROBLEMA
     =========================================== -->
-    <section class="seccion-problema" aria-labelledby="titulo-problema">
-      <div class="contenedor">
+      <section class="seccion-problema" aria-labelledby="titulo-problema">
+        <div class="contenedor">
 
-        <h2 id="titulo-problema">¿Cuál es el problema?</h2>
+          <h2 id="titulo-problema">¿Cuál es el problema?</h2>
 
-        <div class="problema-grid">
-          <div class="problema-texto">
-            <p>
-              Miles de personas en Costa Rica dependen del transporte público
-              para llegar al trabajo, la universidad o sus hogares. Sin embargo,
-              <strong>no existe una forma confiable de saber en qué punto exacto
-              se encuentra el bus</strong> ni cuánto tiempo falta para que llegue
-              a una parada específica.
-            </p>
-            <p>
-              Esto obliga a los pasajeros a esperar sin información, llegar
-              demasiado temprano a las paradas o perder el bus porque no
-              pudieron calcularlo bien. La falta de datos en tiempo real
-              genera frustración, pérdida de tiempo y menor uso del transporte
-              público.
-            </p>
+          <div class="problema-grid">
+            <div class="problema-texto">
+              <p>
+                Miles de personas en Costa Rica dependen del transporte público
+                para llegar al trabajo, la universidad o sus hogares. Sin
+                embargo,
+                <strong>no existe una forma confiable de saber en qué punto
+                  exacto
+                  se encuentra el bus</strong> ni cuánto tiempo falta para que
+                llegue
+                a una parada específica.
+              </p>
+              <p>
+                Esto obliga a los pasajeros a esperar sin información, llegar
+                demasiado temprano a las paradas o perder el bus porque no
+                pudieron calcularlo bien. La falta de datos en tiempo real
+                genera frustración, pérdida de tiempo y menor uso del transporte
+                público.
+              </p>
+            </div>
+
+            <div class="problema-datos">
+              <div class="dato-card">
+                <span class="dato-numero"
+                  aria-label="Más de 1 millón">+1M</span>
+                <p>personas usan el bus diariamente en el GAM</p>
+              </div>
+              <div class="dato-card">
+                <span class="dato-numero">45 min</span>
+                <p>tiempo promedio de espera sin información</p>
+              </div>
+              <div class="dato-card">
+                <span class="dato-numero">1</span>
+                <p>apps oficiales de seguimiento en tiempo real</p>
+              </div>
+            </div>
           </div>
 
-          <div class="problema-datos">
-            <div class="dato-card">
-              <span class="dato-numero" aria-label="Más de 1 millón">+1M</span>
-              <p>personas usan el bus diariamente en el GAM</p>
-            </div>
-            <div class="dato-card">
-              <span class="dato-numero">45 min</span>
-              <p>tiempo promedio de espera sin información</p>
-            </div>
-            <div class="dato-card">
-              <span class="dato-numero">1</span>
-              <p>apps oficiales de seguimiento en tiempo real</p>
-            </div>
-          </div>
         </div>
+      </section>
 
-      </div>
-    </section>
-
-    <!-- ==========================================
+      <!-- ==========================================
           PÚBLICO OBJETIVO
     =========================================== -->
-    <section class="seccion-publico" aria-labelledby="titulo-publico">
-      <div class="contenedor">
+      <section class="seccion-publico" aria-labelledby="titulo-publico">
+        <div class="contenedor">
 
-        <h2 id="titulo-publico">¿Para quién es RouteView?</h2>
-        <p class="subtitulo-seccion">
-          Cualquier persona que use el transporte público en Costa Rica
-          se beneficia de esta solución.
-        </p>
+          <h2 id="titulo-publico">¿Para quién es RouteView?</h2>
+          <p class="subtitulo-seccion">
+            Cualquier persona que use el transporte público en Costa Rica
+            se beneficia de esta solución.
+          </p>
 
-        <ul class="publico-lista">
-          <li class="publico-item">
-            <span class="publico-icono" aria-hidden="true">
-              <img src="images/icon-estudiantes.svg" alt="">
-            </span>
-            <div>
-              <h3>Estudiantes universitarios</h3>
-              <p>Que deben coordinar buses con horarios de clases y no pueden permitirse retrasos.</p>
-            </div>
-          </li>
-          <li class="publico-item">
-            <span class="publico-icono" aria-hidden="true">
-              <img src="images/icon-trabajadores.svg" alt="logo trabajadores">
-            </span>
-            <div>
-              <h3>Trabajadores diarios</h3>
-              <p>Que usan el bus para ir y volver del trabajo y necesitan información exacta.</p>
-            </div>
-          </li>
-          <li class="publico-item">
-            <span class="publico-icono" aria-hidden="true">
-              <img src="images/icon-adultos-mayores.svg" alt="">
-            </span>
-            <div>
-              <h3>Adultos mayores</h3>
-              <p>Que requieren planear con anticipación cuánto tiempo esperar de pie en la parada.</p>
-            </div>
-          </li>
-          <li class="publico-item">
-            <span class="publico-icono" aria-hidden="true">
-              <img src="images/icon-turistas.svg" alt="">
-            </span>
-            <div>
-              <h3>Turistas y visitantes</h3>
-              <p>Que no conocen las rutas y necesitan orientación clara para movilizarse.</p>
-            </div>
-          </li>
-        </ul>
+          <ul class="publico-lista">
+            <li class="publico-item">
+              <span class="publico-icono" aria-hidden="true">
+                <img src="images/icon-estudiantes.svg" alt>
+              </span>
+              <div>
+                <h3>Estudiantes universitarios</h3>
+                <p>Que deben coordinar buses con horarios de clases y no pueden
+                  permitirse retrasos.</p>
+              </div>
+            </li>
+            <li class="publico-item">
+              <span class="publico-icono" aria-hidden="true">
+                <img src="images/icon-trabajadores.svg" alt="logo trabajadores">
+              </span>
+              <div>
+                <h3>Trabajadores diarios</h3>
+                <p>Que usan el bus para ir y volver del trabajo y necesitan
+                  información exacta.</p>
+              </div>
+            </li>
+            <li class="publico-item">
+              <span class="publico-icono" aria-hidden="true">
+                <img src="images/icon-adultos-mayores.svg" alt>
+              </span>
+              <div>
+                <h3>Adultos mayores</h3>
+                <p>Que requieren planear con anticipación cuánto tiempo esperar
+                  de pie en la parada.</p>
+              </div>
+            </li>
+            <li class="publico-item">
+              <span class="publico-icono" aria-hidden="true">
+                <img src="images/icon-turistas.svg" alt>
+              </span>
+              <div>
+                <h3>Turistas y visitantes</h3>
+                <p>Que no conocen las rutas y necesitan orientación clara para
+                  movilizarse.</p>
+              </div>
+            </li>
+          </ul>
 
-      </div>
-    </section>
+        </div>
+      </section>
 
-    <!-- ==========================================
+      <!-- ==========================================
           PROPUESTA DE SOLUCIÓN
     =========================================== -->
-    <section class="seccion-solucion" aria-labelledby="titulo-solucion">
-      <div class="contenedor">
+      <section class="seccion-solucion" aria-labelledby="titulo-solucion">
+        <div class="contenedor">
 
-        <h2 id="titulo-solucion">¿Qué hace RouteView?</h2>
-        <p class="subtitulo-seccion">
-          Una solución web que pone la información del bus en tus manos,
-          sin necesidad de instalar nada.
-        </p>
+          <h2 id="titulo-solucion">¿Qué hace RouteView?</h2>
+          <p class="subtitulo-seccion">
+            Una solución web que pone la información del bus en tus manos,
+            sin necesidad de instalar nada.
+          </p>
 
-        <div class="funciones-grid">
+          <div class="funciones-grid">
 
-          <article class="funcion-card">
-            <span class="funcion-icono" aria-hidden="true">
-              <img src="images/icon-ubicacion.svg" alt="imagen ubicacion">
-            </span>
-            <h3>Ubicación en tiempo real</h3>
-            <p>Consulta la posición actual de los buses en el mapa y sabe en qué parada se encuentran.</p>
-          </article>
+            <article class="funcion-card">
+              <span class="funcion-icono" aria-hidden="true">
+                <img src="images/icon-ubicacion.svg" alt="imagen ubicacion">
+              </span>
+              <h3>Ubicación en tiempo real</h3>
+              <p>Consulta la posición actual de los buses en el mapa y sabe en
+                qué parada se encuentran.</p>
+            </article>
 
-          <article class="funcion-card">
-            <span class="funcion-icono" aria-hidden="true">
-              <img src="images/icon-busqueda.svg" alt="">
-            </span>
-            <h3>Búsqueda y filtros</h3>
-            <p>Busca por número de ruta, nombre o categoría. Filtra por estado para ver solo rutas activas.</p>
-          </article>
+            <article class="funcion-card">
+              <span class="funcion-icono" aria-hidden="true">
+                <img src="images/icon-busqueda.svg" alt>
+              </span>
+              <h3>Búsqueda y filtros</h3>
+              <p>Busca por número de ruta, nombre o categoría. Filtra por estado
+                para ver solo rutas activas.</p>
+            </article>
 
-          <article class="funcion-card">
-            <span class="funcion-icono" aria-hidden="true">
-              <img src="images/icon-guardar-rutas.svg" alt="">
-            </span>
-            <h3>Guarda tus rutas</h3>
-            <p>Marca las rutas que usas con frecuencia y accede a ellas rápidamente desde cualquier sesión.</p>
-          </article>
+            <article class="funcion-card">
+              <span class="funcion-icono" aria-hidden="true">
+                <img src="images/icon-guardar-rutas.svg" alt>
+              </span>
+              <h3>Guarda tus rutas</h3>
+              <p>Marca las rutas que usas con frecuencia y accede a ellas
+                rápidamente desde cualquier sesión.</p>
+            </article>
 
-          <article class="funcion-card">
-            <span class="funcion-icono" aria-hidden="true">
-              <img src="images/icon-alertas.svg" alt="imagen alertas">
-            </span>
-            <h3>Alertas de estado</h3>
-            <p>Recibe información sobre rutas con servicio limitado, desvíos o suspensiones temporales.</p>
-          </article>
+            <article class="funcion-card">
+              <span class="funcion-icono" aria-hidden="true">
+                <img src="images/icon-alertas.svg" alt="imagen alertas">
+              </span>
+              <h3>Alertas de estado</h3>
+              <p>Recibe información sobre rutas con servicio limitado, desvíos o
+                suspensiones temporales.</p>
+            </article>
 
-          <article class="funcion-card">
-            <span class="funcion-icono" aria-hidden="true">
-              <img src="images/icon-horarios.svg" alt="">
-            </span>
-            <h3>Horarios actualizados</h3>
-            <p>Consulta los horarios de operación y la frecuencia de cada ruta disponible.</p>
-          </article>
+            <article class="funcion-card">
+              <span class="funcion-icono" aria-hidden="true">
+                <img src="images/icon-horarios.svg" alt>
+              </span>
+              <h3>Horarios actualizados</h3>
+              <p>Consulta los horarios de operación y la frecuencia de cada ruta
+                disponible.</p>
+            </article>
 
-          <article class="funcion-card">
-            <span class="funcion-icono" aria-hidden="true">
-              <img src="images/icon-dispositivos.svg" alt="">
-            </span>
-            <h3>Funciona en cualquier dispositivo</h3>
-            <p>Diseño adaptado a celular, tablet y computadora. Úsalo desde donde estés.</p>
-          </article>
+            <article class="funcion-card">
+              <span class="funcion-icono" aria-hidden="true">
+                <img src="images/icon-dispositivos.svg" alt>
+              </span>
+              <h3>Funciona en cualquier dispositivo</h3>
+              <p>Diseño adaptado a celular, tablet y computadora. Úsalo desde
+                donde estés.</p>
+            </article>
+
+          </div>
 
         </div>
+      </section>
 
-      </div>
-    </section>
-
-    <!-- ==========================================
+      <!-- ==========================================
           CÓMO EMPEZAR (Flujo de uso)
     =========================================== -->
-    <section class="seccion-como" aria-labelledby="titulo-como">
-      <div class="contenedor">
+      <section class="seccion-como" aria-labelledby="titulo-como">
+        <div class="contenedor">
 
-        <h2 id="titulo-como">¿Cómo empezar?</h2>
+          <h2 id="titulo-como">¿Cómo empezar?</h2>
 
-        <ol class="pasos-lista">
-          <li class="paso">
-            <span class="paso-numero" aria-hidden="true">1</span>
-            <div>
-              <h3>Busca tu ruta</h3>
-              <p>En la página de Rutas, escribe el número o nombre de tu bus. El sistema filtra en tiempo real.</p>
-            </div>
-          </li>
-          <li class="paso">
-            <span class="paso-numero" aria-hidden="true">2</span>
-            <div>
-              <h3>Consulta la información</h3>
-              <p>Ve el horario, frecuencia, paradas y estado actual de la ruta que te interesa.</p>
-            </div>
-          </li>
-          <li class="paso">
-            <span class="paso-numero" aria-hidden="true">3</span>
-            <div>
-              <h3>Guarda tus favoritas</h3>
-              <p>En la sección Mis Rutas, registra las rutas que usas con más frecuencia para acceder rápido.</p>
-            </div>
-          </li>
-        </ol>
+          <ol class="pasos-lista">
+            <li class="paso">
+              <span class="paso-numero" aria-hidden="true">1</span>
+              <div>
+                <h3>Busca tu ruta</h3>
+                <p>En la página de Rutas, escribe el número o nombre de tu bus.
+                  El sistema filtra en tiempo real.</p>
+              </div>
+            </li>
+            <li class="paso">
+              <span class="paso-numero" aria-hidden="true">2</span>
+              <div>
+                <h3>Consulta la información</h3>
+                <p>Ve el horario, frecuencia, paradas y estado actual de la ruta
+                  que te interesa.</p>
+              </div>
+            </li>
+            <li class="paso">
+              <span class="paso-numero" aria-hidden="true">3</span>
+              <div>
+                <h3>Guarda tus favoritas</h3>
+                <p>En la sección Mis Rutas, registra las rutas que usas con más
+                  frecuencia para acceder rápido.</p>
+              </div>
+            </li>
+          </ol>
 
-        <div class="centrado">
-          <a href="rutas.html" class="btn btn-primario">Empezar ahora</a>
+          <div class="centrado">
+            <a href="rutas.html" class="btn btn-primario">Empezar ahora</a>
+          </div>
+
         </div>
+      </section>
 
-      </div>
-    </section>
+    </main>
 
-  </main>
-
-  <!-- ==========================================
+    <!-- ==========================================
         PIE DE PÁGINA
   =========================================== -->
-  <footer>
-    <div class="contenedor footer-contenido">
-      <div class="footer-marca">
-        <p class="logo">
-          <img src="images/3logo.png" alt="">Route<span>View</span></p>
-        <p>Movilidad urbana inteligente para todos.</p>
+    <footer>
+      <div class="contenedor footer-contenido">
+        <div class="footer-marca">
+          <p class="logo">
+            <img src="images/3logo.png" alt>Route<span>View</span></p>
+          <p>Movilidad urbana inteligente para todos.</p>
+        </div>
+
+        <nav aria-label="Links del pie de página">
+          <h4>Navegación</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="rutas.html">Rutas</a></li>
+            <li><a href="registro.html">Mis Rutas</a></li>
+          </ul>
+        </nav>
+
+        <div class="footer-contacto">
+          <h4>Contacto</h4>
+          <p>routeview@rview.app</p>
+          <p>Alajuela, Costa Rica</p>
+        </div>
       </div>
 
-      <nav aria-label="Links del pie de página">
-        <h4>Navegación</h4>
-        <ul class="footer-links">
-          <li><a href="index.html">Inicio</a></li>
-          <li><a href="rutas.html">Rutas</a></li>
-          <li><a href="registro.html">Mis Rutas</a></li>
-        </ul>
-      </nav>
-
-      <div class="footer-contacto">
-        <h4>Contacto</h4>
-        <p>routeview@rview.app</p>
-        <p>Alajuela, Costa Rica</p>
+      <div class="footer-inferior">
+        <p>© 2026 RouteView – Hecho en Costa Rica 🇨🇷</p>
       </div>
-    </div>
+      <div class="footer-creditos text-center">
+        <p>&copy; 2026 RouteView. Proyecto de Curso - UTN Sede Central.
+          Desarrollado por Mía & David.</p>
+      </div>
+    </footer>
 
-    <div class="footer-inferior">
-      <p>© 2026 RouteView – Hecho en Costa Rica 🇨🇷</p>
-    </div>
-    <div class="footer-creditos text-center">
-      <p>&copy; 2026 RouteView. Proyecto de Curso - UTN Sede Central. Desarrollado por Mía & David.</p>
-    </div>
-  </footer>
-
-  <!-- ==========================================
+    <!-- ==========================================
         SCRIPTS DE JS (ORDEN CRÍTICO)
   =========================================== -->
-  <!-- 1. Cargar primero la lógica global del JS -->
-  <script src="js/main.js"></script>
-  <script src="js/eta-utils.js"></script>
-  <script src="js/dark-mode.js"></script>
-  <script src="js/filtro-ruta.js"></script>
+    <!-- 1. Cargar primero la lógica global del JS -->
+    <script src="js/main.js"></script>
+    <script src="js/eta-utils.js"></script>
+    <script src="js/dark-mode.js"></script>
+    <script src="js/filtro-ruta.js"></script>
 
-  <!-- 2. Cargar API de Google Maps con defer para ejecutar initMap cuando todo esté listo -->
-  <script 
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxnyBScS06-vUGMPbZmm0DLIPdtuxTVoI&callback=initMap" 
-    async
-    defer>
+    <!-- 2. Cargar API de Google Maps con defer para ejecutar initMap cuando todo esté listo -->
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxnyBScS06-vUGMPbZmm0DLIPdtuxTVoI&callback=initMap"
+      async
+      defer>
   </script>
 
-</body>
+  </body>
 </html>
