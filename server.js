@@ -52,7 +52,7 @@ async function login() {
   }
 }
 
-// ── Consulta al API con reintento automático si la sesión expiró 
+// ── Consulta al API con reintento automático si la sesión expiró ───────────────
 async function fetchBusesData() {
   if (!sessionCookie) await login();
 

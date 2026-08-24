@@ -27,6 +27,9 @@
           </ul>
         </nav>
 
+        <!-- Botón de sesión (inyectado por auth.js si no hay sesión, o nombre de usuario si hay) -->
+        <div id="nav-auth-slot" class="nav-auth-slot"></div>
+
         <button
           id="hamburger"
           class="hamburger"
@@ -382,7 +385,7 @@
     <script src="js/main.js"></script>
     <script src="js/eta-utils.js"></script>
     <script src="js/dark-mode.js"></script>
-    <script src="js/filtro-ruta.js"></script>
+    <script src="js/filtro-rutas.js"></script>
 
     <!-- 2. Cargar API de Google Maps con defer para ejecutar initMap cuando todo esté listo -->
     <script
@@ -391,5 +394,10 @@
       defer>
   </script>
 
+    <!-- Auth: detecta si hay sesión y actualiza navbar -->
+    <script type="module">
+      import { actualizarNavbar } from './js/auth.js';
+      actualizarNavbar();
+    </script>
   </body>
 </html>
