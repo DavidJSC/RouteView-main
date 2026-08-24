@@ -27,6 +27,9 @@
           </ul>
         </nav>
 
+        <!-- Botón de sesión (inyectado por auth.js si no hay sesión, o nombre de usuario si hay) -->
+        <div id="nav-auth-slot" class="nav-auth-slot"></div>
+
         <button
           id="hamburger"
           class="hamburger"
@@ -391,5 +394,10 @@
       defer>
   </script>
 
+    <!-- Auth: detecta si hay sesión y actualiza navbar -->
+    <script type="module">
+      import { actualizarNavbar } from './js/auth.js';
+      actualizarNavbar();
+    </script>
   </body>
 </html>

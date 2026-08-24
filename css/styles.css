@@ -101,8 +101,8 @@ body {
 }
 
 .nav-contenido {
-  width: 100%;
-  max-width: 1100px;
+  width: 90%;
+  max-width: 1050px;
   margin: 0 auto;
   padding: 14px 20px;
   display: flex;
@@ -886,4 +886,33 @@ footer h4 {
   .seccion-como h2 {
     font-size: 26px;
   }
+}
+
+/* ── Auth navbar (agregar al final de styles.css) ── */
+.nav-auth-slot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nav-username {
+  color: var(--blanco);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.btn-nav-logout {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.85rem;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 6px 14px;
+  border-radius: 50px;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-nav-logout:hover {
+  color: var(--blanco);
+  border-color: var(--blanco);
+}
+.btn-nav-login {
+  padding: 8px 20px !important;
+  font-size: 0.88rem !important;
 }
