@@ -241,12 +241,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const txtParada = document.getElementById('parada-usuario');
         const txtDescripcion = document.getElementById('descripcion-ruta');
 
+        // Migración: si el usuario está logueado, borrar la clave genérica vieja
+        try {
+            const _u = JSON.parse(localStorage.getItem('rv_user'));
+            if (_u && _u.uid && localStorage.getItem('misRutasFavoritas')) {
+                localStorage.removeItem('misRutasFavoritas');
+            }
+        } catch(_) {}
+
         cargarFavoritosDOM();
 
-        txtAlias.addEventListener('input', () => validarCampoVacio(txtAlias, 'error-alias', 'El alias es obligatorio para personalizar la ruta.'));
-        txtBus.addEventListener('input', () => validarCampoVacio(txtBus, 'error-bus', 'Debe indicar el número o nombre oficial de la línea.'));
-        selCategoria.addEventListener('change', () => validarCampoVacio(selCategoria, 'error-categoria', 'Seleccione una categoría válida.'));
-        txtParada.addEventListener('input', () => validarCampoVacio(txtParada, 'error-parada', 'Escriba el punto o parada donde aborda el bus.'));
+        txtAlias?.addEventListener('input', () => validarCampoVacio(txtAlias, 'error-alias', 'El alias es obligatorio para personalizar la ruta.'));
+        txtBus?.addEventListener('input', () => validarCampoVacio(txtBus, 'error-bus', 'Debe indicar el número o nombre oficial de la línea.'));
+        selCategoria?.addEventListener('change', () => validarCampoVacio(selCategoria, 'error-categoria', 'Seleccione una categoría válida.'));
+        txtParada?.addEventListener('input', () => validarCampoVacio(txtParada, 'error-parada', 'Escriba el punto o parada donde aborda el bus.'));
         txtDescripcion.addEventListener('input', () => {
             const errDesc = document.getElementById('error-descripcion');
             if (txtDescripcion.value.trim().length < 10) {
@@ -269,13 +277,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         formulario.addEventListener('submit', (e) => {
-            e.preventDefault(); 
+            e.preventDefault();
 
-            const v1 = validarCampoVacio(txtAlias, 'error-alias', 'El alias es obligatorio.');
-            const v2 = validarCampoVacio(txtBus, 'error-bus', 'Debe indicar la línea de bus.');
-            const v3 = validarCampoVacio(selCategoria, 'error-categoria', 'Seleccione una categoría.');
-            const v4 = validarCampoVacio(txtParada, 'error-parada', 'Escriba su parada usual.');
-            const v5 = txtDescripcion.value.trim().length >= 10;
+            // Requerir sesión para guardar
+            const _uGuardar = JSON.parse(localStorage.getItem('rv_user') || 'null');
+            if (!_uGuardar || !_uGuardar.uid) {
+                if (mensajeExitoGlobal) {
+                    mensajeExitoGlobal.style.display = 'block';
+                    mensajeExitoGlobal.style.backgroundColor = '#fff3cd';
+                    mensajeExitoGlobal.style.color = '#856404';
+                    mensajeExitoGlobal.style.border = '1px solid #ffc107';
+                    mensajeExitoGlobal.innerHTML = '🔒 Necesitás <a href="login.html" style="color:#856404;font-weight:bold;text-decoration:underline;">iniciar sesión</a> para guardar rutas.';
+                    setTimeout(() => { mensajeExitoGlobal.style.display = 'none'; }, 5000);
+                }
+                return;
+            }
+
+            const v1 = txtAlias ? validarCampoVacio(txtAlias, 'error-alias', 'El alias es obligatorio.') : true;
+            const v2 = txtBus ? validarCampoVacio(txtBus, 'error-bus', 'Debe indicar la línea de bus.') : true;
+            const v3 = selCategoria ? validarCampoVacio(selCategoria, 'error-categoria', 'Seleccione una categoría.') : true;
+            const v4 = txtParada ? validarCampoVacio(txtParada, 'error-parada', 'Escriba su parada usual.') : true;
+            const v5 = txtDescripcion ? txtDescripcion.value.trim().length >= 10 : true;
             
             const errDesc = document.getElementById('error-descripcion');
             if (!v5 && errDesc) {
@@ -285,11 +307,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (v1 && v2 && v3 && v4 && v5) {
                 const nuevaRutaFavorita = {
                     id: 'FAV-' + Date.now(), 
-                    alias: txtAlias.value.trim(),
-                    linea: txtBus.value.trim(),
-                    categoria: selCategoria.value,
-                    parada: txtParada.value.trim(),
-                    descripcion: txtDescripcion.value.trim()
+                    alias: txtAlias?.value.trim() || '',
+                    linea: txtBus?.value.trim() || '',
+                    categoria: selCategoria?.value || 'Regular',
+                    parada: txtParada?.value.trim() || '',
+                    descripcion: txtDescripcion?.value.trim() || ''
                 };
 
                 let favoritos = JSON.parse(localStorage.getItem(getRoutesKey())) || [];
@@ -313,6 +335,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function cargarFavoritosDOM() {
             if (!contenedorFavoritas) return;
+
+            const _u = JSON.parse(localStorage.getItem('rv_user') || 'null');
+            if (!_u || !_u.uid) {
+                contenedorFavoritas.innerHTML = `
+                    <div style="text-align:center; padding:40px 20px; color:#475569;">
+                        <p style="font-size:2.5rem; margin-bottom:12px;">🔒</p>
+                        <p style="font-weight:bold; color:#0f172a; margin-bottom:8px;">Iniciá sesión para ver tus rutas</p>
+                        <p style="font-size:0.9rem; margin-bottom:20px;">Tus rutas son privadas y se sincronizan con tu cuenta.</p>
+                        <a href="login.html" style="background:#00C48C; color:#fff; padding:10px 24px; border-radius:50px; font-weight:bold; text-decoration:none; font-size:0.95rem;">Iniciar sesión →</a>
+                    </div>`;
+                return;
+            }
+
             let favoritos = JSON.parse(localStorage.getItem(getRoutesKey())) || [];
 
             if (favoritos.length === 0) {

@@ -190,6 +190,23 @@
     }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
+    .btn-ir-inicio {
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+      padding: 11px;
+      background: #0f172a;
+      color: #ffffff;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      text-align: center;
+      text-decoration: none;
+      transition: background 0.2s;
+      box-sizing: border-box;
+    }
+    .btn-ir-inicio:hover { background: #1e293b; }
+
     .btn-logout-perfil {
       width: 100%;
       margin-top: 20px;
@@ -262,8 +279,6 @@
             <div class="alerta" id="alerta-nombre"></div>
           </div>
 
-          <a href="index.html" class="btn-ir-inicio">🗺️ Ir al mapa principal</a>
-
           <button class="btn-logout-perfil" id="btn-cerrar-sesion">Cerrar sesión</button>
         </div>
 
@@ -273,9 +288,20 @@
       <!-- Columna derecha -->
       <div style="display: flex; flex-direction: column; gap: 24px;">
 
+        <!-- Card bienvenida / ir al inicio -->
+        <div class="card" style="text-align: center; padding: 40px 28px;">
+          <div style="font-size: 3rem; margin-bottom: 16px;">🚌</div>
+          <h2 style="font-size: 1.3rem; color: #0f172a; margin-bottom: 10px;">¡Listo para empezar?</h2>
+          <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 28px; line-height: 1.6;">
+            Gracias por registrarte en RouteView.<br>
+            Explorá rutas, seguí buses en tiempo real y guardá tus favoritas.
+          </p>
+          <a href="index.html" class="btn-ir-inicio">Ver el mapa →</a>
+        </div>
+
         <!-- Buscador de paradas — Endpoint 5: Google Maps Geocoding API -->
         <div class="card">
-          <p class="card-titulo"> Buscar dirección de parada</p>
+          <p class="card-titulo">📍 Buscar dirección de parada</p>
           <p style="font-size: 0.88rem; color: var(--gris-texto); margin-bottom: 14px;">
             Ingresá una dirección en Costa Rica para obtener sus coordenadas exactas.
           </p>
