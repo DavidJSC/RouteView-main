@@ -1,14 +1,22 @@
 /**
  * auth.js – RouteView
- * Servicio centralizado de autenticación.
- * Curso: ISW-521 Programación en Ambiente Web I – UTN
+ * Servicio de autenticación usando Firebase Auth REST API.
+ * Curso: Programación en Ambiente Web I
+ *
+ * Endpoints consumidos:
+ *  1. POST accounts:signUp             → registrarUsuario()
+ *  2. POST accounts:signInWithPassword → iniciarSesion()
+ *  3. POST accounts:lookup             → obtenerPerfil()
+ *  4. POST accounts:update             → actualizarNombre()
  */
 
-const API_BASE = 'http://localhost:3000';
-const TOKEN_KEY = 'rv_token';
-const USER_KEY = 'rv_user';
+const FIREBASE_API_KEY = 'AIzaSyCUA9h2t5x0azluTFHyrRQriVec7b3SYDI';
+const FIREBASE_BASE    = 'https://identitytoolkit.googleapis.com/v1/accounts';
 
-// ─── Almacenamiento del token ────────────────────────────────────────────────
+const TOKEN_KEY = 'rv_token';
+const USER_KEY  = 'rv_user';
+
+// ─── Sesión local ────────────────────────────────────────────────────────────
 
 export function guardarSesion(token, usuario) {
     localStorage.setItem(TOKEN_KEY, token);
@@ -25,8 +33,7 @@ export function obtenerToken() {
 }
 
 export function obtenerUsuario() {
-    const raw = localStorage.getItem(USER_KEY);
-    try { return raw ? JSON.parse(raw) : null; }
+    try { return JSON.parse(localStorage.getItem(USER_KEY)); }
     catch { return null; }
 }
 
@@ -34,68 +41,124 @@ export function estaAutenticado() {
     return !!obtenerToken();
 }
 
-// ─── Llamadas al API ─────────────────────────────────────────────────────────
+// ─── Endpoint 1: Registro ────────────────────────────────────────────────────
+// POST https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=API_KEY
+// Body: { email, password, displayName, returnSecureToken }
 
-/**
- * POST /api/auth/register
- */
 export async function registrarUsuario({ fullName, email, password }) {
-    const res = await fetch(`${API_BASE}/api/auth/register`, {
+    const res = await fetch(`${FIREBASE_BASE}:signUp?key=${FIREBASE_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullName, email, password })
+        body: JSON.stringify({
+            email,
+            password,
+            displayName: fullName,
+            returnSecureToken: true
+        })
     });
+
     const data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Error al registrarse');
-    return data; // { message, user }
+    if (!res.ok) throw new Error(traducirError(data.error?.message));
+    return data; // { idToken, email, displayName, localId, ... }
 }
 
-/**
- * POST /api/auth/login
- */
+// ─── Endpoint 2: Login ───────────────────────────────────────────────────────
+// POST https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=API_KEY
+// Body: { email, password, returnSecureToken }
+
 export async function iniciarSesion({ email, password }) {
-    const res = await fetch(`${API_BASE}/api/auth/login`, {
+    const res = await fetch(`${FIREBASE_BASE}:signInWithPassword?key=${FIREBASE_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, returnSecureToken: true })
     });
+
     const data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Credenciales incorrectas');
-    return data; // { token, user }
+    if (!res.ok) throw new Error(traducirError(data.error?.message));
+    return data; // { idToken, email, displayName, localId, ... }
 }
 
-/**
- * GET /api/auth/perfil  (ruta protegida)
- */
+// ─── Endpoint 3: Perfil (ruta protegida con token) ───────────────────────────
+// POST https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=API_KEY
+// Body: { idToken }   ← requiere el token guardado en sesión
+
 export async function obtenerPerfil() {
     const token = obtenerToken();
-    if (!token) throw new Error('No autenticado');
-    const res = await fetch(`${API_BASE}/api/auth/perfil`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+    if (!token) throw new Error('No hay sesión activa');
+
+    const res = await fetch(`${FIREBASE_BASE}:lookup?key=${FIREBASE_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: token })
     });
+
     const data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Error al obtener perfil');
-    return data; // { user }
+    if (!res.ok) throw new Error(traducirError(data.error?.message));
+    return data.users[0]; // { localId, email, displayName, createdAt, ... }
 }
 
-// ─── Helper: actualiza el navbar en cualquier página ─────────────────────────
+// ─── Endpoint 4: Actualizar nombre ───────────────────────────────────────────
+// POST https://identitytoolkit.googleapis.com/v1/accounts:update?key=API_KEY
+// Body: { idToken, displayName, returnSecureToken }
+
+export async function actualizarNombre(nuevoNombre) {
+    const token = obtenerToken();
+    if (!token) throw new Error('No hay sesión activa');
+
+    const res = await fetch(`${FIREBASE_BASE}:update?key=${FIREBASE_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            idToken: token,
+            displayName: nuevoNombre,
+            returnSecureToken: true
+        })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(traducirError(data.error?.message));
+
+    // Actualizar el nombre en localStorage también
+    const usuario = obtenerUsuario();
+    if (usuario) {
+        usuario.fullName = nuevoNombre;
+        localStorage.setItem(USER_KEY, JSON.stringify(usuario));
+    }
+    return data;
+}
+
+// ─── Helper: mensajes de error en español ────────────────────────────────────
+
+function traducirError(codigo) {
+    const errores = {
+        'EMAIL_EXISTS':            'Este correo ya está registrado.',
+        'INVALID_EMAIL':           'El formato del correo no es válido.',
+        'WEAK_PASSWORD':           'La contraseña debe tener al menos 6 caracteres.',
+        'EMAIL_NOT_FOUND':         'No existe una cuenta con ese correo.',
+        'INVALID_PASSWORD':        'Contraseña incorrecta.',
+        'USER_DISABLED':           'Esta cuenta ha sido deshabilitada.',
+        'INVALID_LOGIN_CREDENTIALS': 'Correo o contraseña incorrectos.',
+        'TOO_MANY_ATTEMPTS_TRY_LATER': 'Demasiados intentos. Intentá más tarde.',
+    };
+    return errores[codigo] || 'Ocurrió un error. Intentá de nuevo.';
+}
+
+// ─── Actualiza el navbar en cualquier página ──────────────────────────────────
 
 export function actualizarNavbar() {
     const usuario = obtenerUsuario();
-
-    // Intenta el slot dedicado primero; si no existe, cae en nav-links
     const slot = document.getElementById('nav-auth-slot');
     const contenedorNav = document.querySelector('.nav-links');
 
-    // Limpia inyecciones previas en ambos lugares
     if (slot) slot.innerHTML = '';
     contenedorNav?.querySelectorAll('.nav-auth').forEach(el => el.remove());
 
     if (usuario) {
         const html = `
-        <span class="nav-username">👤 ${usuario.fullName.split(' ')[0]}</span>
-        <a href="#" id="btn-logout" class="btn-nav-logout">Cerrar sesión</a>
-    `;
+            <span class="nav-username">👤 ${usuario.fullName?.split(' ')[0] || 'Usuario'}</span>
+            <a href="perfil.html" class="btn-nav-perfil">Mi perfil</a>
+            <a href="#" id="btn-logout" class="btn-nav-logout">Cerrar sesión</a>
+        `;
         if (slot) {
             slot.innerHTML = html;
         } else if (contenedorNav) {
@@ -116,7 +179,6 @@ export function actualizarNavbar() {
         }
     }
 
-    // Evento cerrar sesión (puede estar en slot o en nav-links)
     document.getElementById('btn-logout')?.addEventListener('click', (e) => {
         e.preventDefault();
         cerrarSesion();

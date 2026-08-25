@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/dark-mode.css" />
   <style>
-    /* ── Página de login ── */
     .login-wrapper {
       min-height: 100vh;
       display: flex;
@@ -37,9 +36,7 @@
       color: var(--azul);
       text-decoration: none;
     }
-    .login-card .logo-mini img {
-      height: 36px;
-    }
+    .login-card .logo-mini img { height: 36px; }
     .login-card .logo-mini span { color: var(--verde); }
 
     /* Tabs */
@@ -66,13 +63,10 @@
       border-bottom-color: var(--verde);
     }
 
-    /* Formularios */
     .tab-panel { display: none; }
     .tab-panel.activo { display: block; }
 
-    .grupo-campo {
-      margin-bottom: 18px;
-    }
+    .grupo-campo { margin-bottom: 18px; }
     .grupo-campo label {
       display: block;
       font-weight: bold;
@@ -85,28 +79,26 @@
       padding: 11px 14px;
       border: 1.5px solid var(--gris-medio);
       border-radius: 8px;
-      font-size: 0.95rem;
-      font-family: inherit;
+      font-size: 1rem;
       color: var(--azul);
       transition: border-color 0.2s;
-      box-sizing: border-box;
+      background: var(--gris-claro);
     }
     .grupo-campo input:focus {
       outline: none;
       border-color: var(--verde);
+      background: var(--blanco);
     }
-    .grupo-campo input.campo-error {
-      border-color: #dc3545;
-    }
-    .msg-error-campo {
-      color: #dc3545;
-      font-size: 0.8rem;
+    .grupo-campo input.error { border-color: #e53e3e; }
+
+    .msg-error {
+      color: #e53e3e;
+      font-size: 0.82rem;
       margin-top: 4px;
       display: block;
-      min-height: 16px;
+      min-height: 18px;
     }
 
-    /* Botón submit */
     .btn-submit {
       width: 100%;
       padding: 13px;
@@ -118,87 +110,22 @@
       font-weight: bold;
       cursor: pointer;
       margin-top: 8px;
-      transition: background 0.2s;
+      transition: background 0.2s, opacity 0.2s;
     }
-    .btn-submit:hover { background: #157b5e; }
-    .btn-submit:disabled {
-      background: var(--gris-medio);
-      cursor: not-allowed;
-    }
+    .btn-submit:hover { background: #00a678; }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    /* Alertas globales */
+    /* Alerta */
     .alerta {
       padding: 12px 16px;
       border-radius: 8px;
-      margin-bottom: 18px;
       font-size: 0.9rem;
-      font-weight: 600;
+      margin-bottom: 18px;
       display: none;
     }
-    .alerta.exito {
-      background: #d4edda;
-      color: #155724;
-      display: block;
-    }
-    .alerta.error {
-      background: #f8d7da;
-      color: #721c24;
-      display: block;
-    }
-
-    /* Spinner dentro del botón */
-    .spinner {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(255,255,255,0.4);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: girar 0.7s linear infinite;
-      vertical-align: middle;
-      margin-right: 6px;
-    }
-    @keyframes girar { to { transform: rotate(360deg); } }
-
-    /* Botón invitado en navbar */
-    .btn-invitado-nav {
-      font-size: 0.88rem !important;
-      padding: 8px 20px !important;
-    }
-    /* Botón invitado (texto) */
-    .btn-invitado {
-      color: var(--gris-texto);
-      font-size: 0.9rem;
-      text-decoration: none;
-      border-bottom: 1px dashed var(--gris-medio);
-      padding-bottom: 2px;
-      transition: color 0.2s;
-    }
-    .btn-invitado:hover { color: var(--azul); }
-
-    /* Estilos navbar auth slot */
-    .nav-auth-slot {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .nav-username {
-      color: var(--blanco);
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-    .btn-nav-logout {
-      color: var(--gris-texto);
-      font-size: 0.85rem;
-      text-decoration: none;
-      border: 1px solid var(--gris-medio);
-      padding: 6px 14px;
-      border-radius: 50px;
-    }
-    .btn-nav-login {
-      padding: 8px 20px !important;
-      font-size: 0.88rem !important;
-    }
+    .alerta.error   { background: #fff5f5; color: #c53030; border: 1px solid #feb2b2; }
+    .alerta.exito   { background: #f0fff4; color: #276749; border: 1px solid #9ae6b4; }
+    .alerta.visible { display: block; }
   </style>
 </head>
 <body>
@@ -206,281 +133,215 @@
   <!-- NAVBAR -->
   <header id="navbar">
     <div class="nav-contenido">
-      <a href="index.html" class="logo" aria-label="Inicio de RouteView">
-        <img src="images/3logo.png" alt="Logo de RouteView">
+      <a href="index.html" class="logo" aria-label="Inicio">
+        <img src="images/3logo.png" alt="Logo RouteView">
         Route<span>View</span>
       </a>
-      <nav>
+      <nav aria-label="Navegación principal">
         <ul class="nav-links">
           <li><a href="index.html">Inicio</a></li>
           <li><a href="rutas.html">Rutas</a></li>
           <li><a href="registro.html">Mis Rutas</a></li>
-          <li>
-            <a href="index.html" class="btn btn-primario btn-invitado-nav">
-              Continuar como invitado →
-            </a>
-          </li>
         </ul>
       </nav>
-      <button id="hamburger" class="hamburger" aria-label="Abrir menú"
-        aria-expanded="false" aria-controls="menu-movil">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-    <div id="menu-movil" class="menu-movil" role="navigation" aria-label="Menú móvil">
-      <ul>
-        <li><a href="index.html">Inicio</a></li>
-        <li><a href="rutas.html">Rutas</a></li>
-        <li><a href="registro.html">Mis Rutas</a></li>
-      </ul>
+      <div id="nav-auth-slot"></div>
     </div>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL -->
+  <!-- CONTENIDO -->
   <main class="login-wrapper">
     <div class="login-card">
 
-      <!-- Logo pequeño -->
       <a href="index.html" class="logo-mini">
-        <img src="images/3logo.png" alt="RouteView">
+        <img src="images/3logo.png" alt="Logo">
         Route<span>View</span>
       </a>
 
-      <!-- Tabs: Login / Registro -->
+      <!-- Tabs -->
       <div class="tabs" role="tablist">
-        <button class="tab-btn activo" id="tab-login" role="tab"
-          aria-selected="true" aria-controls="panel-login">
-          Iniciar sesión
-        </button>
-        <button class="tab-btn" id="tab-registro" role="tab"
-          aria-selected="false" aria-controls="panel-registro">
-          Crear cuenta
-        </button>
+        <button class="tab-btn activo" id="tab-login"    role="tab" aria-selected="true">Iniciar sesión</button>
+        <button class="tab-btn"        id="tab-registro" role="tab" aria-selected="false">Crear cuenta</button>
       </div>
 
-      <!-- ── Panel: LOGIN ── -->
-      <div class="tab-panel activo" id="panel-login" role="tabpanel" aria-labelledby="tab-login">
-        <div class="alerta" id="alerta-login" role="alert"></div>
+      <!-- Panel LOGIN -->
+      <div class="tab-panel activo" id="panel-login" role="tabpanel">
+        <div class="alerta" id="alerta-login"></div>
 
         <div class="grupo-campo">
           <label for="login-email">Correo electrónico</label>
           <input type="email" id="login-email" placeholder="tu@correo.com" autocomplete="email" />
-          <span class="msg-error-campo" id="err-login-email"></span>
+          <span class="msg-error" id="err-login-email"></span>
         </div>
-
         <div class="grupo-campo">
           <label for="login-password">Contraseña</label>
-          <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
-          <span class="msg-error-campo" id="err-login-password"></span>
+          <input type="password" id="login-password" placeholder="••••••" autocomplete="current-password" />
+          <span class="msg-error" id="err-login-password"></span>
         </div>
 
         <button class="btn-submit" id="btn-login">Ingresar</button>
+
+        <p style="text-align:center; margin-top:18px; font-size:0.9rem; color:var(--gris-texto);">
+          ¿No tenés cuenta? <a href="#" id="link-a-registro" style="color:var(--verde); font-weight:bold;">Registrate</a>
+        </p>
       </div>
 
-      <!-- ── Panel: REGISTRO ── -->
-      <div class="tab-panel" id="panel-registro" role="tabpanel" aria-labelledby="tab-registro">
-        <div class="alerta" id="alerta-registro" role="alert"></div>
+      <!-- Panel REGISTRO -->
+      <div class="tab-panel" id="panel-registro" role="tabpanel">
+        <div class="alerta" id="alerta-registro"></div>
 
         <div class="grupo-campo">
           <label for="reg-nombre">Nombre completo</label>
           <input type="text" id="reg-nombre" placeholder="María García" autocomplete="name" />
-          <span class="msg-error-campo" id="err-reg-nombre"></span>
+          <span class="msg-error" id="err-reg-nombre"></span>
         </div>
-
         <div class="grupo-campo">
           <label for="reg-email">Correo electrónico</label>
           <input type="email" id="reg-email" placeholder="tu@correo.com" autocomplete="email" />
-          <span class="msg-error-campo" id="err-reg-email"></span>
+          <span class="msg-error" id="err-reg-email"></span>
         </div>
-
         <div class="grupo-campo">
-          <label for="reg-password">Contraseña</label>
-          <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
-          <span class="msg-error-campo" id="err-reg-password"></span>
+          <label for="reg-password">Contraseña <small style="color:var(--gris-texto); font-weight:normal;">(mínimo 6 caracteres)</small></label>
+          <input type="password" id="reg-password" placeholder="••••••" autocomplete="new-password" />
+          <span class="msg-error" id="err-reg-password"></span>
         </div>
-
         <div class="grupo-campo">
           <label for="reg-confirmar">Confirmar contraseña</label>
-          <input type="password" id="reg-confirmar" placeholder="Repetí tu contraseña" autocomplete="new-password" />
-          <span class="msg-error-campo" id="err-reg-confirmar"></span>
+          <input type="password" id="reg-confirmar" placeholder="••••••" autocomplete="new-password" />
+          <span class="msg-error" id="err-reg-confirmar"></span>
         </div>
 
         <button class="btn-submit" id="btn-registro">Crear cuenta</button>
+
+        <p style="text-align:center; margin-top:18px; font-size:0.9rem; color:var(--gris-texto);">
+          ¿Ya tenés cuenta? <a href="#" id="link-a-login" style="color:var(--verde); font-weight:bold;">Iniciá sesión</a>
+        </p>
       </div>
 
     </div>
-
-
   </main>
 
   <script type="module">
     import {
-      iniciarSesion,
       registrarUsuario,
+      iniciarSesion,
       guardarSesion,
-      estaAutenticado
+      estaAutenticado,
+      actualizarNavbar
     } from './js/auth.js';
 
-    // Si ya está autenticado, redirigir directo
-    if (estaAutenticado()) {
-      window.location.href = 'registro.html';
-    }
+    // Si ya está autenticado, redirigir
+    if (estaAutenticado()) window.location.href = 'perfil.html';
 
-    // ── Tabs ────────────────────────────────────────────────────────────────
-    const tabLogin    = document.getElementById('tab-login');
-    const tabRegistro = document.getElementById('tab-registro');
-    const panelLogin    = document.getElementById('panel-login');
-    const panelRegistro = document.getElementById('panel-registro');
+    actualizarNavbar();
 
-    tabLogin.addEventListener('click', () => cambiarTab('login'));
-    tabRegistro.addEventListener('click', () => cambiarTab('registro'));
-
-    function cambiarTab(cual) {
-      const esLogin = cual === 'login';
-      tabLogin.classList.toggle('activo', esLogin);
-      tabRegistro.classList.toggle('activo', !esLogin);
-      tabLogin.setAttribute('aria-selected', esLogin);
-      tabRegistro.setAttribute('aria-selected', !esLogin);
-      panelLogin.classList.toggle('activo', esLogin);
-      panelRegistro.classList.toggle('activo', !esLogin);
+    // ── Tabs ─────────────────────────────────────────────────────────────────
+    function cambiarTab(tab) {
+      const esLogin = tab === 'login';
+      document.getElementById('tab-login').classList.toggle('activo', esLogin);
+      document.getElementById('tab-registro').classList.toggle('activo', !esLogin);
+      document.getElementById('panel-login').classList.toggle('activo', esLogin);
+      document.getElementById('panel-registro').classList.toggle('activo', !esLogin);
       limpiarErrores();
+      ocultarAlertas();
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────────────
+    document.getElementById('tab-login').addEventListener('click', () => cambiarTab('login'));
+    document.getElementById('tab-registro').addEventListener('click', () => cambiarTab('registro'));
+    document.getElementById('link-a-registro').addEventListener('click', (e) => { e.preventDefault(); cambiarTab('registro'); });
+    document.getElementById('link-a-login').addEventListener('click', (e) => { e.preventDefault(); cambiarTab('login'); });
+
+    // ── Helpers UI ───────────────────────────────────────────────────────────
+    function marcarError(inputId, errorId, mensaje) {
+      document.getElementById(inputId)?.classList.add('error');
+      const el = document.getElementById(errorId);
+      if (el) el.textContent = mensaje;
+    }
+
+    function limpiarErrores() {
+      document.querySelectorAll('.grupo-campo input').forEach(i => i.classList.remove('error'));
+      document.querySelectorAll('.msg-error').forEach(e => e.textContent = '');
+    }
+
     function mostrarAlerta(id, mensaje, tipo) {
       const el = document.getElementById(id);
+      if (!el) return;
       el.textContent = mensaje;
-      el.className = `alerta ${tipo}`;
-    }
-    function ocultarAlerta(id) {
-      const el = document.getElementById(id);
-      el.textContent = '';
-      el.className = 'alerta';
-    }
-    function marcarError(inputId, errId, mensaje) {
-      document.getElementById(inputId).classList.add('campo-error');
-      document.getElementById(errId).textContent = mensaje;
-    }
-    function limpiarError(inputId, errId) {
-      document.getElementById(inputId).classList.remove('campo-error');
-      document.getElementById(errId).textContent = '';
-    }
-    function limpiarErrores() {
-      ['login-email','login-password','reg-nombre','reg-email','reg-password','reg-confirmar']
-        .forEach(id => {
-          document.getElementById(id)?.classList.remove('campo-error');
-        });
-      ['err-login-email','err-login-password','err-reg-nombre','err-reg-email',
-       'err-reg-password','err-reg-confirmar'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = '';
-      });
-      ocultarAlerta('alerta-login');
-      ocultarAlerta('alerta-registro');
-    }
-    function setBotonCargando(btnId, cargando, textoOriginal) {
-      const btn = document.getElementById(btnId);
-      btn.disabled = cargando;
-      btn.innerHTML = cargando
-        ? `<span class="spinner"></span> Procesando...`
-        : textoOriginal;
+      el.className = `alerta ${tipo} visible`;
     }
 
-    // ── Validación LOGIN ─────────────────────────────────────────────────────
+    function ocultarAlertas() {
+      document.querySelectorAll('.alerta').forEach(a => a.className = 'alerta');
+    }
+
+    function setBtnCargando(id, cargando, textoOriginal) {
+      const btn = document.getElementById(id);
+      btn.disabled = cargando;
+      btn.textContent = cargando ? 'Cargando...' : textoOriginal;
+    }
+
+    // ── LOGIN ─────────────────────────────────────────────────────────────────
+    // Llama a: Endpoint 2 → POST accounts:signInWithPassword
     document.getElementById('btn-login').addEventListener('click', async () => {
       limpiarErrores();
+      ocultarAlertas();
       const email    = document.getElementById('login-email').value.trim();
       const password = document.getElementById('login-password').value;
-
       let valido = true;
-      if (!email) {
-        marcarError('login-email', 'err-login-email', 'El correo es obligatorio');
-        valido = false;
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        marcarError('login-email', 'err-login-email', 'Formato de correo inválido');
-        valido = false;
-      }
-      if (!password) {
-        marcarError('login-password', 'err-login-password', 'La contraseña es obligatoria');
-        valido = false;
-      }
+
+      if (!email) { marcarError('login-email', 'err-login-email', 'El correo es obligatorio'); valido = false; }
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { marcarError('login-email', 'err-login-email', 'Formato de correo inválido'); valido = false; }
+      if (!password) { marcarError('login-password', 'err-login-password', 'La contraseña es obligatoria'); valido = false; }
       if (!valido) return;
 
-      setBotonCargando('btn-login', true, 'Ingresar');
+      setBtnCargando('btn-login', true, 'Ingresar');
       try {
-        const { token, user } = await iniciarSesion({ email, password });
-        guardarSesion(token, user);
-        mostrarAlerta('alerta-login', `¡Bienvenido/a, ${user.fullName}!`, 'exito');
-        setTimeout(() => { window.location.href = 'registro.html'; }, 1000);
+        const data = await iniciarSesion({ email, password });
+        guardarSesion(data.idToken, { fullName: data.displayName, email: data.email, uid: data.localId });
+        mostrarAlerta('alerta-login', `¡Bienvenido/a, ${data.displayName || email}!`, 'exito');
+        setTimeout(() => window.location.href = 'perfil.html', 1000);
       } catch (err) {
         mostrarAlerta('alerta-login', err.message, 'error');
       } finally {
-        setBotonCargando('btn-login', false, 'Ingresar');
+        setBtnCargando('btn-login', false, 'Ingresar');
       }
     });
 
-    // ── Validación REGISTRO ──────────────────────────────────────────────────
+    // ── REGISTRO ──────────────────────────────────────────────────────────────
+    // Llama a: Endpoint 1 → POST accounts:signUp
     document.getElementById('btn-registro').addEventListener('click', async () => {
       limpiarErrores();
+      ocultarAlertas();
       const fullName  = document.getElementById('reg-nombre').value.trim();
       const email     = document.getElementById('reg-email').value.trim();
       const password  = document.getElementById('reg-password').value;
       const confirmar = document.getElementById('reg-confirmar').value;
-
       let valido = true;
-      if (!fullName || fullName.length < 2) {
-        marcarError('reg-nombre', 'err-reg-nombre', 'Ingresá tu nombre completo');
-        valido = false;
-      }
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        marcarError('reg-email', 'err-reg-email', 'Correo inválido');
-        valido = false;
-      }
-      if (!password || password.length < 6) {
-        marcarError('reg-password', 'err-reg-password', 'Mínimo 6 caracteres');
-        valido = false;
-      }
-      if (password !== confirmar) {
-        marcarError('reg-confirmar', 'err-reg-confirmar', 'Las contraseñas no coinciden');
-        valido = false;
-      }
+
+      if (!fullName || fullName.length < 2) { marcarError('reg-nombre', 'err-reg-nombre', 'Ingresá tu nombre completo'); valido = false; }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { marcarError('reg-email', 'err-reg-email', 'Correo inválido'); valido = false; }
+      if (!password || password.length < 6) { marcarError('reg-password', 'err-reg-password', 'Mínimo 6 caracteres'); valido = false; }
+      if (password !== confirmar) { marcarError('reg-confirmar', 'err-reg-confirmar', 'Las contraseñas no coinciden'); valido = false; }
       if (!valido) return;
 
-      setBotonCargando('btn-registro', true, 'Crear cuenta');
+      setBtnCargando('btn-registro', true, 'Crear cuenta');
       try {
         await registrarUsuario({ fullName, email, password });
-        mostrarAlerta('alerta-registro', '¡Cuenta creada! Ya podés iniciar sesión.', 'exito');
-        setTimeout(() => cambiarTab('login'), 1500);
+        mostrarAlerta('alerta-registro', '✓ ¡Cuenta creada! Ya podés iniciar sesión.', 'exito');
+        setTimeout(() => cambiarTab('login'), 1800);
       } catch (err) {
         mostrarAlerta('alerta-registro', err.message, 'error');
       } finally {
-        setBotonCargando('btn-registro', false, 'Crear cuenta');
+        setBtnCargando('btn-registro', false, 'Crear cuenta');
       }
     });
 
-    // ── Enter en campos ──────────────────────────────────────────────────────
-    ['login-email','login-password'].forEach(id => {
-      document.getElementById(id).addEventListener('keydown', e => {
-        if (e.key === 'Enter') document.getElementById('btn-login').click();
-      });
-    });
-    ['reg-nombre','reg-email','reg-password','reg-confirmar'].forEach(id => {
-      document.getElementById(id).addEventListener('keydown', e => {
-        if (e.key === 'Enter') document.getElementById('btn-registro').click();
-      });
-    });
-
-    // ── Menú hamburguesa ─────────────────────────────────────────────────────
-    const hamburger = document.getElementById('hamburger');
-    const menuMovil  = document.getElementById('menu-movil');
-    if (hamburger && menuMovil) {
-      hamburger.addEventListener('click', () => {
-        const abierto = hamburger.getAttribute('aria-expanded') === 'true';
-        hamburger.setAttribute('aria-expanded', !abierto);
-        menuMovil.classList.toggle('open');
-        menuMovil.style.display = menuMovil.classList.contains('open') ? 'block' : 'none';
-      });
-    }
+    // Enter en campos
+    ['login-email', 'login-password'].forEach(id =>
+      document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btn-login').click(); })
+    );
+    ['reg-nombre', 'reg-email', 'reg-password', 'reg-confirmar'].forEach(id =>
+      document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btn-registro').click(); })
+    );
   </script>
 </body>
 </html>
