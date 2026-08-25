@@ -16,8 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // =========================================================================
     // 1. LÓGICA PARA LA PÁGINA DE CATÁLOGO (rutas.html)
-    //    Intenta conectarse al servidor KML (localhost:3000).
-    //    Si falla, carga el catálogo desde data/rutas.json como respaldo.
     // =========================================================================
     const contenedorCatalogo = document.getElementById('contenedor-catalogo-rutas');
 
@@ -29,14 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let todasLasRutas = [];
         const rutasExpandidas = new Set();
 
-        // Siempre carga rutas.json primero como base del catálogo,
-        // luego intenta enriquecer con datos en tiempo real del servidor KML.
         cargarCatalogo();
         setInterval(enriquecerConKML, 8000);
 
         async function cargarCatalogo() {
             await cargarDesdeJSON();
-            enriquecerConKML(); // intenta agregar datos en tiempo real si el servidor está up
+            enriquecerConKML();
         }
 
         async function cargarDesdeJSON() {
@@ -69,17 +65,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Enriquece las rutas base con datos en tiempo real de stefserver (si está disponible)
         async function enriquecerConKML() {
             try {
                 const response = await fetch('http://localhost:3000/api/buses', { signal: AbortSignal.timeout(4000) });
                 if (!response.ok) return;
 
                 const data = await response.json();
-                // data puede ser un array directo o un objeto con propiedad de array
                 const buses = Array.isArray(data) ? data : (data.buses || data.data || []);
 
-                // Agrupa buses por ramal
                 const mapaRamal = new Map();
                 buses.forEach(bus => {
                     const ramal = bus.ramal && bus.ramal.trim() !== '' ? bus.ramal.trim() : null;
@@ -88,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     mapaRamal.get(ramal).push(bus);
                 });
 
-                // Inyecta los datos en tiempo real en las rutas del JSON
                 todasLasRutas.forEach(ruta => {
                     let busesRuta = [];
                     mapaRamal.forEach((lista, ramalKML) => {
@@ -109,21 +101,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 filtrarCatalogo();
-            } catch (_) {
-                // Servidor no disponible — catálogo sigue con datos estáticos del JSON
-            }
+            } catch (_) {}
         }
 
-        // Agrupa la lista plana de buses KML en rutas únicas
         function agruparBusesPorRuta(buses) {
             const mapa = new Map();
             buses.forEach((bus) => {
                 const nombreRuta = bus.ruta && bus.ruta !== 'No asignada' ? bus.ruta : null;
                 if (!nombreRuta) return;
-
-                if (!mapa.has(nombreRuta)) {
-                    mapa.set(nombreRuta, { nombreRuta, buses: [] });
-                }
+                if (!mapa.has(nombreRuta)) mapa.set(nombreRuta, { nombreRuta, buses: [] });
                 mapa.get(nombreRuta).buses.push(bus);
             });
 
@@ -131,18 +117,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cantidadBuses = ruta.buses.length;
                 const pasajerosHoy = ruta.buses.reduce((s, b) => s + (b.pasajeros_hoy || 0), 0);
                 const velocidadPromedio = cantidadBuses > 0
-                    ? Math.round(ruta.buses.reduce((s, b) => s + (b.velocidad || 0), 0) / cantidadBuses)
-                    : 0;
+                    ? Math.round(ruta.buses.reduce((s, b) => s + (b.velocidad || 0), 0) / cantidadBuses) : 0;
                 return {
                     id: 'ruta-' + ruta.nombreRuta.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
                     nombreRuta: ruta.nombreRuta,
                     estado: cantidadBuses > 0 ? 'Activo' : 'Sin unidades',
-                    cantidadBuses,
-                    pasajerosHoy,
-                    velocidadPromedio,
-                    paradasIda: [],
-                    paradasVuelta: [],
-                    buses: ruta.buses
+                    cantidadBuses, pasajerosHoy, velocidadPromedio,
+                    paradasIda: [], paradasVuelta: [], buses: ruta.buses
                 };
             });
         }
@@ -157,32 +138,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sinResultados) sinResultados.style.display = 'none';
 
             rutas.forEach(ruta => {
-                // Color según estado
-                const colorBorde = {
-                    'Activo': '#28a745',
-                    'Regular': '#007AFF',
-                    'Demorado': '#fd7e14',
-                    'Fuera de Horario': '#6c757d',
-                    'Sin unidades': '#adb5bd'
-                }[ruta.estado] || '#007AFF';
-
-                const badgeColor = {
-                    'Activo': '#28a745',
-                    'Regular': '#007AFF',
-                    'Demorado': '#fd7e14',
-                    'Fuera de Horario': '#6c757d',
-                    'Sin unidades': '#adb5bd'
-                }[ruta.estado] || '#007AFF';
-
-                // Paradas (modo fallback: muestra lista real; modo KML: muestra buses)
+                const colorBorde = { 'Activo': '#28a745', 'Regular': '#007AFF', 'Demorado': '#fd7e14', 'Fuera de Horario': '#6c757d', 'Sin unidades': '#adb5bd' }[ruta.estado] || '#007AFF';
+                const badgeColor = colorBorde;
                 const tieneParadas = ruta.paradasIda && ruta.paradasIda.length > 0;
                 const estaExpandida = rutasExpandidas.has(ruta.id);
 
                 let contenidoExpandible = '';
                 if (tieneParadas) {
-                    // Modo JSON: mostrar paradas de ida y vuelta
                     const listaIda = ruta.paradasIda.map((p, i) => `
-                        <li style="padding:5px 0; border-top: 1px solid #eef2ff; font-size:0.8rem; color:#555; display:flex; align-items:center; gap:6px;">
+                        <li style="padding:5px 0; border-top:1px solid #eef2ff; font-size:0.8rem; color:#555; display:flex; align-items:center; gap:6px;">
                             <span style="background:#007AFF; color:#fff; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:0.65rem; flex-shrink:0;">${i + 1}</span>
                             ${p.nombre}
                             <span style="margin-left:auto; font-size:0.72rem; color:#94a3b8;">+${p.tiempoEstimado} min</span>
@@ -190,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const listaVuelta = ruta.paradasVuelta && ruta.paradasVuelta.length > 0
                         ? ruta.paradasVuelta.map((p, i) => `
-                        <li style="padding:5px 0; border-top: 1px solid #eef2ff; font-size:0.8rem; color:#555; display:flex; align-items:center; gap:6px;">
+                        <li style="padding:5px 0; border-top:1px solid #eef2ff; font-size:0.8rem; color:#555; display:flex; align-items:center; gap:6px;">
                             <span style="background:#00C48C; color:#fff; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:0.65rem; flex-shrink:0;">${i + 1}</span>
                             ${p.nombre}
                             <span style="margin-left:auto; font-size:0.72rem; color:#94a3b8;">+${p.tiempoEstimado} min</span>
@@ -199,37 +163,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     contenidoExpandible = `
                         <div class="tabs-paradas" style="margin-bottom:10px;">
-                            <button class="tab-ida tab-activo" style="padding:5px 12px; border:none; border-radius:4px 0 0 4px; background:#007AFF; color:#fff; font-size:0.78rem; font-weight:bold; cursor:pointer;">
-                                ↗ Ida (${ruta.paradasIda.length} paradas)
-                            </button>
-                            <button class="tab-vuelta" style="padding:5px 12px; border:none; border-radius:0 4px 4px 0; background:#e2e8f0; color:#555; font-size:0.78rem; font-weight:bold; cursor:pointer;">
-                                ↙ Vuelta (${ruta.paradasVuelta ? ruta.paradasVuelta.length : 0} paradas)
-                            </button>
+                            <button class="tab-ida tab-activo" style="padding:5px 12px; border:none; border-radius:4px 0 0 4px; background:#007AFF; color:#fff; font-size:0.78rem; font-weight:bold; cursor:pointer;">↗ Ida (${ruta.paradasIda.length} paradas)</button>
+                            <button class="tab-vuelta" style="padding:5px 12px; border:none; border-radius:0 4px 4px 0; background:#e2e8f0; color:#555; font-size:0.78rem; font-weight:bold; cursor:pointer;">↙ Vuelta (${ruta.paradasVuelta ? ruta.paradasVuelta.length : 0} paradas)</button>
                         </div>
-                        <ul class="lista-paradas-ida" style="list-style:none; padding:0; margin:0 0 10px 0; max-height:200px; overflow-y:auto;">
-                            ${listaIda}
-                        </ul>
-                        <ul class="lista-paradas-vuelta" style="display:none; list-style:none; padding:0; margin:0 0 10px 0; max-height:200px; overflow-y:auto;">
-                            ${listaVuelta}
-                        </ul>`;
+                        <ul class="lista-paradas-ida" style="list-style:none; padding:0; margin:0 0 10px 0; max-height:200px; overflow-y:auto;">${listaIda}</ul>
+                        <ul class="lista-paradas-vuelta" style="display:none; list-style:none; padding:0; margin:0 0 10px 0; max-height:200px; overflow-y:auto;">${listaVuelta}</ul>`;
                 } else {
-                    // Modo KML: mostrar buses activos
                     const detalleBuses = (ruta.buses || []).map(bus => `
                         <li style="padding:6px 0; border-top:1px solid #eee; font-size:0.8rem; color:#555;">
                             🚌 <b>Unidad #${bus.bus_id}</b> · ${bus.velocidad ?? 0} km/h
                         </li>`).join('');
-                    contenidoExpandible = `
-                        <ul class="lista-buses-detalle" style="list-style:none; padding:0; margin:0 0 15px 0;">
-                            ${detalleBuses || '<li style="font-size:0.8rem;color:#999;">Sin unidades activas.</li>'}
-                        </ul>`;
+                    contenidoExpandible = `<ul class="lista-buses-detalle" style="list-style:none; padding:0; margin:0 0 15px 0;">${detalleBuses || '<li style="font-size:0.8rem;color:#999;">Sin unidades activas.</li>'}</ul>`;
                 }
 
-                // Info en tiempo real con lista de unidades activas
                 let infoTiempoReal = '';
                 if (ruta.cantidadBuses > 0) {
                     const listaBuses = (ruta.buses || []).map(b => {
                         const ramalBus = b.ramal && b.ramal.trim() !== '' ? b.ramal.trim() : 'Sin ramal';
-                        const conductor = (b.despacho && b.despacho.actual && b.despacho.actual.conductor) || b.conductor || 'Sin asignar';
                         return `<li style="font-size:0.78rem; padding:4px 0; border-top:1px solid #f1f5f9; display:flex; align-items:center; gap:6px;">
                             <span style="background:#007AFF; color:#fff; border-radius:4px; padding:1px 5px; font-weight:bold; font-size:0.72rem;">Bus #${b.bus || b.id || '?'}</span>
                             <span style="color:#475569;">${ramalBus}</span>
@@ -244,15 +194,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>`;
                 }
 
-                // Descripción de la ruta
-                const descripcion = ruta.descripcion
-                    ? `<p style="font-size:0.82rem; color:#777; margin:0 0 10px; font-style:italic;">${ruta.descripcion}</p>`
-                    : '';
-
-                // Número de ruta badge
-                const numeroBadge = ruta.numeroRuta
-                    ? `<span style="background:#f1f5f9; color:#475569; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold; font-family:monospace;">${ruta.numeroRuta}</span>`
-                    : '';
+                const descripcion = ruta.descripcion ? `<p style="font-size:0.82rem; color:#777; margin:0 0 10px; font-style:italic;">${ruta.descripcion}</p>` : '';
+                const numeroBadge = ruta.numeroRuta ? `<span style="background:#f1f5f9; color:#475569; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold; font-family:monospace;">${ruta.numeroRuta}</span>` : '';
 
                 const tarjeta = document.createElement('div');
                 tarjeta.className = 'tarjeta-ruta';
@@ -268,22 +211,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         <h3 style="margin:0 0 6px 0; font-size:1.15rem; color:#1e293b;">${ruta.nombreRuta}</h3>
                         ${descripcion}
                         ${infoTiempoReal}
-
                         <button class="btn-ver-paradas" style="background:none; border:1px solid #cbd5e1; border-radius:4px; color:#475569; font-size:0.8rem; font-weight:bold; cursor:pointer; padding:5px 10px; margin-bottom:10px; width:100%; text-align:left;">
                             ${estaExpandida ? '▴ Ocultar paradas' : '▾ Ver paradas'}
                         </button>
-                        <div class="detalle-expandible" style="display:${estaExpandida ? 'block' : 'none'};">
-                            ${contenidoExpandible}
-                        </div>
+                        <div class="detalle-expandible" style="display:${estaExpandida ? 'block' : 'none'};">${contenidoExpandible}</div>
                     </div>
                     <button class="btn-agregar-fav" data-id="${ruta.id}" style="background:#00C48C; color:white; border:none; padding:10px; border-radius:4px; font-weight:bold; cursor:pointer; width:100%; margin-top:10px;">
                         ★ Añadir a Favoritos
-                    </button>
-                `;
+                    </button>`;
                 contenedorCatalogo.appendChild(tarjeta);
             });
 
-            // Listeners de expandir/colapsar
             document.querySelectorAll('.tarjeta-ruta').forEach((tarjetaEl) => {
                 const boton = tarjetaEl.querySelector('.btn-ver-paradas');
                 const detalle = tarjetaEl.querySelector('.detalle-expandible');
@@ -298,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     else rutasExpandidas.delete(rutaId);
                 });
 
-                // Tabs de ida/vuelta
                 const tabIda = tarjetaEl.querySelector('.tab-ida');
                 const tabVuelta = tarjetaEl.querySelector('.tab-vuelta');
                 const listaIda = tarjetaEl.querySelector('.lista-paradas-ida');
@@ -306,21 +243,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (tabIda && tabVuelta) {
                     tabIda.addEventListener('click', () => {
-                        listaIda.style.display = 'block';
-                        listaVuelta.style.display = 'none';
+                        listaIda.style.display = 'block'; listaVuelta.style.display = 'none';
                         tabIda.style.background = '#007AFF'; tabIda.style.color = '#fff';
                         tabVuelta.style.background = '#e2e8f0'; tabVuelta.style.color = '#555';
                     });
                     tabVuelta.addEventListener('click', () => {
-                        listaIda.style.display = 'none';
-                        listaVuelta.style.display = 'block';
+                        listaIda.style.display = 'none'; listaVuelta.style.display = 'block';
                         tabVuelta.style.background = '#00C48C'; tabVuelta.style.color = '#fff';
                         tabIda.style.background = '#e2e8f0'; tabIda.style.color = '#555';
                     });
                 }
             });
 
-            // Botones de favoritos
             document.querySelectorAll('.btn-agregar-fav').forEach(boton => {
                 boton.addEventListener('click', (e) => {
                     const idRuta = e.target.getAttribute('data-id');
@@ -333,15 +267,12 @@ document.addEventListener('DOMContentLoaded', () => {
         function filtrarCatalogo() {
             const textoBusqueda = inputBusqueda ? inputBusqueda.value.toLowerCase().trim() : '';
             const estSeleccionado = filtroEstado ? filtroEstado.value : 'todos';
-
             const rutasFiltradas = todasLasRutas.filter(ruta => {
-                const coincideTexto =
-                    ruta.nombreRuta.toLowerCase().includes(textoBusqueda) ||
+                const coincideTexto = ruta.nombreRuta.toLowerCase().includes(textoBusqueda) ||
                     (ruta.numeroRuta && ruta.numeroRuta.toLowerCase().includes(textoBusqueda));
                 const coincideEstado = estSeleccionado === 'todos' || ruta.estado === estSeleccionado;
                 return coincideTexto && coincideEstado;
             });
-
             renderizarTarjetas(rutasFiltradas);
         }
 
@@ -354,13 +285,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(`La ruta "${ruta.nombreRuta}" ya está en tus favoritas.`);
                 return;
             }
-            const nuevoFavorito = {
+            favoritos.push({
                 id: ruta.id,
                 alias: "Acceso Rápido",
                 linea: ruta.nombreRuta,
                 descripcion: ruta.descripcion || `Ruta ${ruta.numeroRuta || ''} de Autotransportes Moravia`
-            };
-            favoritos.push(nuevoFavorito);
+            });
             localStorage.setItem('misRutasFavoritas', JSON.stringify(favoritos));
             alert(`¡"${ruta.nombreRuta}" se añadió a Mis Rutas!`);
         }
@@ -377,21 +307,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const mensajeExitoGlobal = document.getElementById('mensaje-exito');
 
         const txtAlias = document.getElementById('alias-ruta');
-        const selBus = document.getElementById('nombre-bus');       // ahora es select
+        const selBus = document.getElementById('nombre-bus');
         const selCategoria = document.getElementById('categoria-ruta');
-        const selParada = document.getElementById('parada-usuario'); // ahora es select
+        const selParada = document.getElementById('parada-usuario');
         const txtDescripcion = document.getElementById('descripcion-ruta');
 
-        // Catálogo de rutas cargado desde rutas.json
         let catalogoRutas = [];
 
-        // 1. Cargar rutas.json y poblar el dropdown de ramales
         async function cargarDropdownRutas() {
             try {
                 const res = await fetch('data/rutas.json');
                 if (!res.ok) throw new Error('No se pudo cargar rutas.json');
                 catalogoRutas = await res.json();
-
                 selBus.innerHTML = '<option value="">-- Seleccioná un ramal --</option>';
                 catalogoRutas.forEach(r => {
                     const opt = document.createElement('option');
@@ -404,16 +331,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // 2. Al elegir un ramal, poblar las paradas de abordaje (ida + vuelta)
         selBus.addEventListener('change', () => {
             validarCampoVacio(selBus, 'error-bus', 'Seleccioná un ramal.');
             const rutaSeleccionada = catalogoRutas.find(r => r.nombreRuta === selBus.value);
             selParada.innerHTML = '<option value="">-- Seleccioná una parada --</option>';
-
-            if (!rutaSeleccionada) {
-                selParada.disabled = true;
-                return;
-            }
+            if (!rutaSeleccionada) { selParada.disabled = true; return; }
             selParada.disabled = false;
 
             const paradasIda = (rutaSeleccionada.paradas && rutaSeleccionada.paradas.ida) || [];
@@ -424,8 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 grupoIda.label = '↗ Ida (Terminal → San José)';
                 paradasIda.forEach(p => {
                     const opt = document.createElement('option');
-                    opt.value = p.nombre;
-                    opt.textContent = p.nombre;
+                    opt.value = p.nombre; opt.textContent = p.nombre;
                     grupoIda.appendChild(opt);
                 });
                 selParada.appendChild(grupoIda);
@@ -436,8 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 grupoVuelta.label = '↙ Vuelta (San José → Terminal)';
                 paradasVuelta.forEach(p => {
                     const opt = document.createElement('option');
-                    opt.value = p.nombre;
-                    opt.textContent = p.nombre;
+                    opt.value = p.nombre; opt.textContent = p.nombre;
                     grupoVuelta.appendChild(opt);
                 });
                 selParada.appendChild(grupoVuelta);
@@ -451,11 +371,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         cargarDropdownRutas();
         cargarFavoritosDOM();
-        // Actualizar estado en tiempo real cada 10 segundos
         setInterval(cargarFavoritosDOM, 10000);
 
         txtAlias.addEventListener('input', () => validarCampoVacio(txtAlias, 'error-alias', 'El alias es obligatorio para personalizar la ruta.'));
-        selBus.addEventListener('change', () => validarCampoVacio(selBus, 'error-bus', 'Seleccioná un ramal.'));
         selCategoria.addEventListener('change', () => validarCampoVacio(selCategoria, 'error-categoria', 'Seleccione una categoría válida.'));
         selParada.addEventListener('change', () => validarCampoVacio(selParada, 'error-parada', 'Seleccioná tu parada de abordaje.'));
         txtDescripcion.addEventListener('input', () => {
@@ -471,27 +389,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const contenedorError = document.getElementById(idError);
             if (!contenedorError) return false;
             if (!input.value || input.value.trim() === '') {
-                contenedorError.textContent = mensaje;
-                return false;
+                contenedorError.textContent = mensaje; return false;
             } else {
-                contenedorError.textContent = '';
-                return true;
+                contenedorError.textContent = ''; return true;
             }
         }
 
         formulario.addEventListener('submit', (e) => {
             e.preventDefault();
-
             const v1 = validarCampoVacio(txtAlias, 'error-alias', 'El alias es obligatorio.');
             const v2 = validarCampoVacio(selBus, 'error-bus', 'Seleccioná un ramal.');
             const v3 = validarCampoVacio(selCategoria, 'error-categoria', 'Seleccione una categoría.');
             const v4 = validarCampoVacio(selParada, 'error-parada', 'Seleccioná tu parada de abordaje.');
             const v5 = txtDescripcion.value.trim().length >= 10;
-
             const errDesc = document.getElementById('error-descripcion');
-            if (!v5 && errDesc) {
-                errDesc.textContent = 'La descripción debe tener mínimo 10 caracteres.';
-            }
+            if (!v5 && errDesc) errDesc.textContent = 'La descripción debe tener mínimo 10 caracteres.';
 
             if (v1 && v2 && v3 && v4 && v5) {
                 const nuevaRutaFavorita = {
@@ -502,11 +414,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     parada: selParada.value.trim(),
                     descripcion: txtDescripcion.value.trim()
                 };
-
                 let favoritos = JSON.parse(localStorage.getItem('misRutasFavoritas')) || [];
                 favoritos.push(nuevaRutaFavorita);
                 localStorage.setItem('misRutasFavoritas', JSON.stringify(favoritos));
-
                 formulario.reset();
                 selParada.innerHTML = '<option value="">-- Primero seleccioná un ramal --</option>';
                 selParada.disabled = true;
@@ -535,7 +445,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Consultar buses en tiempo real para mostrar estado
             let busesActivos = [];
             try {
                 const r = await fetch('http://localhost:3000/api/buses', { signal: AbortSignal.timeout(3000) });
@@ -543,9 +452,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const data = await r.json();
                     busesActivos = Array.isArray(data) ? data : (data.buses || data.data || []);
                 }
-            } catch (_) { /* servidor no disponible */ }
+            } catch (_) {}
 
-            // Agrupar buses por ramal para consulta rápida
             const mapaRamal = new Map();
             busesActivos.forEach(b => {
                 const ramal = b.ramal && b.ramal.trim() !== '' ? b.ramal.trim() : null;
@@ -557,14 +465,11 @@ document.addEventListener('DOMContentLoaded', () => {
             contenedorFavoritas.innerHTML = '';
 
             favoritos.forEach(fav => {
-                // Buscar buses activos en el ramal de esta ruta favorita
                 let busesEnRuta = [];
                 mapaRamal.forEach((lista, ramal) => {
                     const r1 = ramal.toLowerCase().trim();
                     const r2 = fav.linea.toLowerCase().trim();
-                    if (r1 === r2 || r1.includes(r2) || r2.includes(r1)) {
-                        busesEnRuta = busesEnRuta.concat(lista);
-                    }
+                    if (r1 === r2 || r1.includes(r2) || r2.includes(r1)) busesEnRuta = busesEnRuta.concat(lista);
                 });
 
                 const hayBuses = busesEnRuta.length > 0;
@@ -574,7 +479,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         ? `<span style="background:#94a3b8; color:#fff; padding:3px 8px; border-radius:12px; font-size:0.72rem; font-weight:bold;">⚫ Sin unidades ahora</span>`
                         : `<span style="background:#e2e8f0; color:#64748b; padding:3px 8px; border-radius:12px; font-size:0.72rem;">Sin conexión al servidor</span>`);
 
-                // Lista de buses activos (si hay)
                 const listaBuses = hayBuses
                     ? `<div style="margin-top:8px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:8px 10px;">
                         <p style="font-size:0.75rem; font-weight:bold; color:#166534; margin:0 0 4px 0;">Unidades en ruta ahora:</p>
@@ -584,11 +488,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <span style="color:#94a3b8;">·</span>
                                 <span>⚡ ${b.velocidad ?? 0} km/h</span>
                             </div>`).join('')}
-                       </div>`
-                    : '';
+                       </div>` : '';
 
                 const colorBorde = hayBuses ? '#22c55e' : '#cbd5e1';
-
                 const item = document.createElement('div');
                 item.className = 'tarjeta-favorita-guardada';
                 item.style = `background:#fff; border:1px solid ${colorBorde}; border-left:4px solid ${colorBorde}; padding:15px; border-radius:8px; margin-bottom:12px; position:relative; box-shadow:0 2px 6px rgba(0,0,0,0.05);`;
@@ -604,8 +506,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     ${fav.parada ? `<p style="margin:0 0 4px 0; font-size:0.83rem; color:#475569;">📍 <strong>Abordaje:</strong> ${fav.parada}</p>` : ''}
                     <p style="margin:0 0 6px 0; font-size:0.82rem; color:#64748b; font-style:italic;">"${fav.descripcion}"</p>
-                    ${listaBuses}
-                `;
+                    ${listaBuses}`;
                 contenedorFavoritas.appendChild(item);
             });
 
@@ -636,7 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =========================================================================
-// 3. LÓGICA DE GOOGLE MAPS API & MONITOREO DE BUSES EN TIEMPO REAL (KML)
+// 3. LÓGICA DE GOOGLE MAPS & BUSES EN TIEMPO REAL
 // =========================================================================
 let map;
 const markers = {};
@@ -693,28 +594,21 @@ async function fetchBuses() {
         const data = await response.json();
         const raw = Array.isArray(data) ? data : (data.buses || data.data || []);
 
-        // Convierte el formato JSON de stefserver al formato interno de buses
-        let dataBuses = raw
+        const dataBuses = raw
             .filter(b => b.lat && b.lon)
             .map(b => ({
-                bus_id: b.bus || b.id || '?',
+                bus_id: String(b.bus || b.id || '?'),
                 lat: parseFloat(b.lat),
                 lng: parseFloat(b.lon),
                 velocidad: b.velocidad || 0,
-                pasajeros_abordo: (b.despacho && b.despacho.actual) ? 0 : 0,
+                pasajeros_abordo: 0,
                 pasajeros_hoy: 0,
                 conductor: (b.despacho && b.despacho.actual && b.despacho.actual.conductor) || b.conductor || 'Sin asignar',
                 ruta: b.ramal || 'No asignada',
                 actualizado: b.actualizado || '',
-                placa: b.placa || '',
-                despacho: b.despacho || null
+                placa: b.placa || ''
             }))
             .filter(b => b.lat >= 8 && b.lat <= 12 && b.lng >= -86 && b.lng <= -82);
-
-        window.ultimosBusesDetectados = dataBuses;
-        if (typeof window.aplicarFiltroRuta === 'function') {
-            dataBuses = window.aplicarFiltroRuta(dataBuses);
-        }
 
         if (statsLabel) {
             statsLabel.innerText = `${dataBuses.length} buses en tiempo real`;
@@ -723,65 +617,12 @@ async function fetchBuses() {
 
         renderBuses(dataBuses);
     } catch (error) {
-        console.warn('No se pudo conectar con el servidor.', error);
+        console.warn('⚠️ No se pudo conectar con el servidor.', error);
         if (statsLabel) {
-            statsLabel.innerText = "Sin conexión al servidor";
+            statsLabel.innerText = "Error de conexión con el backend";
             statsLabel.style.backgroundColor = '#ef4444';
         }
     }
-}
-
-function parsearKML(kmlText) {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(kmlText, "text/xml");
-
-    const errorNode = xmlDoc.querySelector('parsererror');
-    if (errorNode) { console.error('Error parseando KML:', errorNode.textContent); return []; }
-
-    const placemarks = Array.from(xmlDoc.getElementsByTagName('Placemark'));
-    const buses = [];
-
-    placemarks.forEach((placemark) => {
-        const nameNode = placemark.getElementsByTagName('name')[0];
-        const busId = nameNode ? nameNode.textContent.trim() : null;
-        if (!busId) return;
-
-        const pointNode = placemark.getElementsByTagName('Point')[0];
-        const coordsNode = pointNode ? pointNode.getElementsByTagName('coordinates')[0] : null;
-        if (!coordsNode) return;
-
-        const partesCoords = coordsNode.textContent.trim().split(',');
-        const lng = parseFloat(partesCoords[0]);
-        const lat = parseFloat(partesCoords[1]);
-        if (isNaN(lat) || isNaN(lng)) return;
-        if (lat < 8 || lat > 12 || lng > -82 || lng < -86) return;
-
-        const descNode = placemark.getElementsByTagName('description')[0];
-        const descTexto = descNode ? descNode.textContent : '';
-
-        buses.push({ bus_id: busId, lat, lng, ...extraerDatosDescripcion(descTexto) });
-    });
-
-    return buses;
-}
-
-function extraerDatosDescripcion(texto) {
-    const buscar = (etiqueta) => {
-        const regex = new RegExp(etiqueta + '\\s*:\\s*(.+)', 'i');
-        const match = texto.match(regex);
-        return match ? match[1].trim() : null;
-    };
-    const velocidadTexto = buscar('Velocidad');
-    const abordosTexto = buscar('Abordos');
-    const pasajerosHoyTexto = buscar('Pasajeros movilizados hoy');
-    return {
-        actualizado: buscar('Actualizado'),
-        velocidad: velocidadTexto ? parseFloat(velocidadTexto) || 0 : 0,
-        pasajeros_abordo: abordosTexto ? parseInt(abordosTexto, 10) || 0 : 0,
-        pasajeros_hoy: pasajerosHoyTexto ? parseInt(pasajerosHoyTexto, 10) || 0 : 0,
-        conductor: buscar('Conductor'),
-        ruta: buscar('Ruta')
-    };
 }
 
 function actualizarRecorridoBus(busId, position) {
@@ -829,7 +670,6 @@ function renderBuses(buses) {
         const conductor = bus.conductor && bus.conductor !== 'No asignado' ? bus.conductor : 'Sin asignar';
         const placa = bus.placa ? `<p style="margin:3px 0; font-size:0.85rem;">🪪 <b>Placa:</b> ${bus.placa}</p>` : '';
 
-        // Ramal: mostrar el nombre real o indicar que no tiene asignado
         const filaRamal = ramal
             ? `<p style="margin:3px 0; font-size:0.85rem; background:#e0f2fe; padding:3px 6px; border-radius:4px;">🚏 <b>Ramal:</b> ${ramal}</p>`
             : `<p style="margin:3px 0; font-size:0.85rem; color:#94a3b8;">🚏 <b>Ramal:</b> Sin asignar hoy</p>`;
@@ -861,5 +701,18 @@ function renderBuses(buses) {
         busesDibujados++;
     });
 
-    if (busesDibujados > 0) map.fitBounds(bounds);
+    if (busesDibujados > 0 && !window.mapaAjustado) {
+        map.fitBounds(bounds);
+        window.mapaAjustado = true;
+    }
+
+    // Oculta buses que ya no están en la lista
+    const idsActivos = new Set(buses.map(b => b.bus_id));
+    Object.keys(markers).forEach((id) => {
+        const visible = idsActivos.has(id);
+        markers[id].setVisible(visible);
+        if (busPolylines[id]) busPolylines[id].setMap(visible ? map : null);
+    });
 }
+
+window.initMap = initMap;
