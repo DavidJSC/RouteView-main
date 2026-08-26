@@ -26,9 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // =========================================================================
-    // 1. CATÁLOGO (rutas.html)
-    // =========================================================================
+   
+    // 1. CATÁLOGO 
+  
     const contenedorCatalogo = document.getElementById('contenedor-catalogo-rutas');
     if (contenedorCatalogo) {
         const inputBusqueda = document.getElementById('input-busqueda');
@@ -158,9 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // =========================================================================
-    // 2. FORMULARIO (registro.html)
-    // =========================================================================
+  
+    // 2. FORMULARIO 
+   
     const formulario = document.getElementById('formulario-ruta');
     if (formulario) {
         const contenedorFavoritas = document.getElementById('contenedor-rutas-favoritas');
@@ -288,9 +288,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// =========================================================================
+
 // 3. GOOGLE MAPS & BUSES EN TIEMPO REAL
-// =========================================================================
+
 let map;
 const markers={}, busPaths={}, busPolylines={};
 const MAX_PUNTOS_RECORRIDO=40;
