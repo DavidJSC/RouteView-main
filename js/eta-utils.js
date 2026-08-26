@@ -1,7 +1,4 @@
 
-
-
-\
 function calcularDistanciaKm(lat1, lng1, lat2, lng2) {
     const R = 6371; // Radio de la Tierra en km
     const dLat = gradosARadianes(lat2 - lat1);
