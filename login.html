@@ -234,7 +234,7 @@
 
     actualizarNavbar();
 
-    // ── Tabs ─────────────────────────────────────────────────────────────────
+    // Tabs 
     function cambiarTab(tab) {
       const esLogin = tab === 'login';
       document.getElementById('tab-login').classList.toggle('activo', esLogin);
@@ -250,7 +250,7 @@
     document.getElementById('link-a-registro').addEventListener('click', (e) => { e.preventDefault(); cambiarTab('registro'); });
     document.getElementById('link-a-login').addEventListener('click', (e) => { e.preventDefault(); cambiarTab('login'); });
 
-    // ── Helpers UI ───────────────────────────────────────────────────────────
+    // Helpers UI 
     function marcarError(inputId, errorId, mensaje) {
       document.getElementById(inputId)?.classList.add('error');
       const el = document.getElementById(errorId);
@@ -279,7 +279,7 @@
       btn.textContent = cargando ? 'Cargando...' : textoOriginal;
     }
 
-    // ── LOGIN ─────────────────────────────────────────────────────────────────
+    //  LOGIN 
     // Llama a: Endpoint 2 → POST accounts:signInWithPassword
     document.getElementById('btn-login').addEventListener('click', async () => {
       limpiarErrores();
@@ -306,7 +306,7 @@
       }
     });
 
-    // ── REGISTRO ──────────────────────────────────────────────────────────────
+    //  REGISTRO 
     // Llama a: Endpoint 1 → POST accounts:signUp
     document.getElementById('btn-registro').addEventListener('click', async () => {
       limpiarErrores();

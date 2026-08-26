@@ -3,21 +3,96 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RouteView – Catálogo de Rutas</title>
+  <title>RouteView – Catalogo de Rutas</title>
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/dark-mode.css" />
+  <style>
+
+    /*  Barra de filtros  */
+    .barra-filtros {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      margin-bottom: 40px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .barra-filtros label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #555;
+      font-size: 0.9rem;
+    }
+
+    .barra-filtros input,
+    .barra-filtros select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+      box-sizing: border-box;
+      background-color: #fff;
+    }
+
+    .filtro-busqueda { flex: 1; min-width: 280px; }
+    .filtro-estado   { min-width: 180px; }
+
+    /*  Grid de tarjetas de rutas */
+    #contenedor-catalogo-rutas {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    /*  Estado de carga inicial  */
+    .cargando-datos {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: #666;
+      padding: 40px;
+      font-size: 1.2rem;
+    }
+
+    /*  Mensaje cuando no hay resultados */
+    #sin-resultados {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+      color: #777;
+      margin-top: 20px;
+    }
+
+    #sin-resultados p:first-child {
+      margin-bottom: 10px;
+    }
+
+    #sin-resultados .sin-resultados-titulo {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+  </style>
 </head>
 <body>
 
+  <!-- Navbar: auth.js inyecta el nombre del usuario o el boton de login segun el estado de sesion. -->
   <header id="navbar">
     <div class="nav-contenido">
 
       <a href="index.html" class="logo" aria-label="Inicio de RouteView">
-        <img src="../images/3logo.png" alt="Logo de RouteView"> 
+        <img src="images/3logo.png" alt="Logo de RouteView">
         Route<span>View</span>
       </a>
 
-      <nav aria-label="Navegación principal">
+      <nav aria-label="Navegacion principal">
         <ul class="nav-links">
           <li><a href="index.html">Inicio</a></li>
           <li><a href="rutas.html" class="active">Rutas</a></li>
@@ -25,12 +100,14 @@
         </ul>
       </nav>
 
+      <!-- Slot donde auth.js escribe dinamicamente segun si hay sesion activa. -->
       <div id="nav-auth-slot"></div>
 
+      <!-- Boton hamburguesa para pantallas pequenas. -->
       <button
         id="hamburger"
         class="hamburger"
-        aria-label="Abrir menú"
+        aria-label="Abrir menu"
         aria-expanded="false"
         aria-controls="menu-movil"
       >
@@ -41,7 +118,8 @@
 
     </div>
 
-    <div id="menu-movil" class="menu-movil" role="navigation" aria-label="Menú móvil">
+    <!-- Menu colapsable para movil, controlado por el boton hamburguesa. -->
+    <div id="menu-movil" class="menu-movil" role="navigation" aria-label="Menu movil">
       <ul>
         <li><a href="index.html">Inicio</a></li>
         <li><a href="rutas.html" class="active">Rutas</a></li>
@@ -51,28 +129,30 @@
   </header>
 
   <main class="contenedor-principal" style="padding: 120px 20px 60px; min-height: 80vh;">
-    
+
     <section class="seccion-catalogo contenedor">
+
       <div class="bloque-encabezado text-center" style="margin-bottom: 40px;">
         <h1>Explorar Rutas de Autobuses</h1>
-        <p>Encuentra tu línea de bus, consulta los tiempos estimados de llegada en tiempo real y añade paradas a tus favoritos.</p>
+        <p>Encuentra tu linea de bus, consulta los tiempos estimados de llegada en tiempo real y agrega paradas a tus favoritos.</p>
       </div>
 
-      <div class="barra-filtros" style="background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 40px; display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; align-items: center;">
-        
-        <div style="flex: 1; min-width: 280px;">
-          <label for="input-busqueda" style="display: block; font-weight: bold; margin-bottom: 6px; color: #555; font-size: 0.9rem;">¿A dónde vas?</label>
-          <input 
-            type="search" 
-            id="input-busqueda" 
-            placeholder="Buscar por nombre o número de ruta (ej. 105, San José)..." 
-            style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem;"
-          >
+      <!-- Barra de busqueda y filtro de estado.
+        main.js escucha los eventos de estos campos y filtra el catalogo en tiempo real. -->
+      <div class="barra-filtros">
+
+        <div class="filtro-busqueda">
+          <label for="input-busqueda">A donde vas?</label>
+          <input
+            type="search"
+            id="input-busqueda"
+            placeholder="Buscar por nombre o numero de ruta (ej. 105, San Jose)..."
+          />
         </div>
 
-        <div style="min-width: 180px;">
-          <label for="filtro-estado" style="display: block; font-weight: bold; margin-bottom: 6px; color: #555; font-size: 0.9rem;">Estado del servicio:</label>
-          <select id="filtro-estado" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; background-color: #fff; font-size: 1rem;">
+        <div class="filtro-estado">
+          <label for="filtro-estado">Estado del servicio:</label>
+          <select id="filtro-estado">
             <option value="todos">Todos los estados</option>
             <option value="Activo">Activo (con unidades)</option>
             <option value="Sin unidades">Sin unidades reportando</option>
@@ -81,33 +161,38 @@
 
       </div>
 
-      <div id="contenedor-catalogo-rutas" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
-        
-        <div class="cargando-datos" style="grid-column: 1 / -1; text-align: center; color: #666; padding: 40px;">
-          <p style="font-size: 1.2rem;">Cargando catálogo de rutas actualizadas...</p>
+      <!-- Contenedor del catalogo: main.js genera aqui las tarjetas de rutas
+        cargadas desde data/rutas.json y enriquecidas con datos en vivo del servidor. -->
+      <div id="contenedor-catalogo-rutas">
+        <div class="cargando-datos">
+          <p>Cargando catalogo de rutas...</p>
         </div>
-
       </div>
 
-      <div id="sin-resultados" style="display: none; text-align: center; padding: 6px 20px; color: #777; margin-top: 20px;">
-        <p style="font-size: 3rem; margin-bottom: 10px;"> <img src="../images/icon-sin-resultados.svg" alt=""></p>
-        <p style="font-size: 1.2rem; font-weight: bold;">No se encontraron rutas que coincidan con los filtros seleccionados.</p>
-        <p>Intenta cambiar los términos de búsqueda o limpiar los filtros.</p>
+      <!-- Mensaje visible cuando la busqueda no encuentra coincidencias. -->
+      <div id="sin-resultados">
+        <img src="images/icon-sin-resultados.svg" alt="" style="width: 60px; margin-bottom: 16px; opacity: 0.5;">
+        <p class="sin-resultados-titulo">No se encontraron rutas que coincidan con los filtros seleccionados.</p>
+        <p>Intenta cambiar los terminos de busqueda o limpiar los filtros.</p>
       </div>
 
     </section>
 
   </main>
 
+  <!-- Footer: marca, navegacion secundaria y datos de contacto. -->
   <footer>
     <div class="contenedor footer-contenido">
       <div class="footer-marca">
-        <p class="logo"><img src="../images/3logo.png" alt="">Route<span>View</span></p>
+        <p class="logo">
+          <img src="images/3logo.png" alt="">
+          Route<span>View</span>
+        </p>
         <p>Movilidad urbana inteligente para todos.</p>
       </div>
 
-      <nav aria-label="Links del pie de página">
-        <h4>Navegación</h4>
+      <nav aria-label="Links del pie de pagina">
+        <h4>Navegacion</h4>
         <ul class="footer-links">
           <li><a href="index.html">Inicio</a></li>
           <li><a href="rutas.html">Rutas</a></li>
@@ -117,25 +202,30 @@
 
       <div class="footer-contacto">
         <h4>Contacto</h4>
-       <p>routeview@rview.app</p>
+        <p>routeview@rview.app</p>
         <p>Alajuela, Costa Rica</p>
       </div>
     </div>
+
     <div class="footer-inferior">
-      <p>© 2026 RouteView – Hecho en Costa Rica 🇨🇷</p>
+      <p>2026 RouteView – Hecho en Costa Rica</p>
     </div>
     <div class="footer-creditos text-center">
-      <p>&copy; 2026 RouteView. Proyecto de Curso - UTN Sede Central. Desarrollado por Mía & David.</p>
+      <p>&copy; 2026 RouteView. Proyecto de Curso - UTN Sede Central. Desarrollado por Mia y David.</p>
     </div>
   </footer>
 
+  <!-- Logica principal: catalogo de rutas, filtros y boton de agregar a favoritos. -->
   <script src="js/main.js"></script>
   <script src="js/eta-utils.js"></script>
   <script src="js/dark-mode.js"></script>
-  <script src="js/filtro-ruta.js"></script>
+  <script src="js/filtro-rutas.js"></script>
+
+  <!-- Modulo de autenticacion: actualiza el navbar segun si hay sesion activa. -->
   <script type="module">
     import { actualizarNavbar } from './js/auth.js';
     actualizarNavbar();
   </script>
+
 </body>
 </html>

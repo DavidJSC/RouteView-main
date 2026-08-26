@@ -1,5 +1,5 @@
 /**
- * auth.js – RouteView
+ * auth.js / RouteView
  * Servicio de autenticación usando Firebase Auth REST API.
  * Curso: Programación en Ambiente Web I
  *
@@ -16,7 +16,7 @@ const FIREBASE_BASE    = 'https://identitytoolkit.googleapis.com/v1/accounts';
 const TOKEN_KEY = 'rv_token';
 const USER_KEY  = 'rv_user';
 
-// ─── Sesión local ────────────────────────────────────────────────────────────
+//  Sesión local 
 
 export function guardarSesion(token, usuario) {
     localStorage.setItem(TOKEN_KEY, token);
@@ -41,7 +41,7 @@ export function estaAutenticado() {
     return !!obtenerToken();
 }
 
-// ─── Endpoint 1: Registro ────────────────────────────────────────────────────
+//  Endpoint 1: Registro 
 // POST https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=API_KEY
 // Body: { email, password, displayName, returnSecureToken }
 
@@ -62,7 +62,7 @@ export async function registrarUsuario({ fullName, email, password }) {
     return data; // { idToken, email, displayName, localId, ... }
 }
 
-// ─── Endpoint 2: Login ───────────────────────────────────────────────────────
+//  Endpoint 2: Login 
 // POST https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=API_KEY
 // Body: { email, password, returnSecureToken }
 
@@ -78,7 +78,7 @@ export async function iniciarSesion({ email, password }) {
     return data; // { idToken, email, displayName, localId, ... }
 }
 
-// ─── Endpoint 3: Perfil (ruta protegida con token) ───────────────────────────
+//  Endpoint 3: Perfil (ruta protegida con token) 
 // POST https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=API_KEY
 // Body: { idToken }   ← requiere el token guardado en sesión
 
@@ -97,7 +97,7 @@ export async function obtenerPerfil() {
     return data.users[0]; // { localId, email, displayName, createdAt, ... }
 }
 
-// ─── Endpoint 4: Actualizar nombre ───────────────────────────────────────────
+//  Endpoint 4: Actualizar nombre 
 // POST https://identitytoolkit.googleapis.com/v1/accounts:update?key=API_KEY
 // Body: { idToken, displayName, returnSecureToken }
 
@@ -127,7 +127,7 @@ export async function actualizarNombre(nuevoNombre) {
     return data;
 }
 
-// ─── Helper: mensajes de error en español ────────────────────────────────────
+//  Helper: mensajes de error en español 
 
 function traducirError(codigo) {
     const errores = {
@@ -143,7 +143,7 @@ function traducirError(codigo) {
     return errores[codigo] || 'Ocurrió un error. Intentá de nuevo.';
 }
 
-// ─── Actualiza el navbar en cualquier página ──────────────────────────────────
+//  Actualiza el navbar en cualquier página 
 
 export function actualizarNavbar() {
     const usuario = obtenerUsuario();

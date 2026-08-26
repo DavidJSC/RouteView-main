@@ -5,7 +5,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ── Configuración ──────────────────────────────────────────────────────────────
+//  Configuración 
 const STEF_BASE    = 'http://stefserver:5001';
 const BUSES_API    = `${STEF_BASE}/api/buses`;
 const LOGIN_URL    = `${STEF_BASE}/login`;
@@ -18,7 +18,7 @@ const STEF_CLAVE   = process.env.STEF_CLAVE   || 'ALEX2021';
 let sessionCookie = '';
 let loginEnProceso = false;
 
-// ── Login automático ───────────────────────────────────────────────────────────
+// Login automático 
 async function login() {
   if (loginEnProceso) {
     // Esperar a que termine el login en curso
@@ -52,7 +52,7 @@ async function login() {
   }
 }
 
-// ── Consulta al API con reintento automático si la sesión expiró ───────────────
+// Consulta al API con reintento automático si la sesión expiró 
 async function fetchBusesData() {
   if (!sessionCookie) await login();
 
@@ -75,7 +75,7 @@ async function fetchBusesData() {
   return response;
 }
 
-// ── Endpoints ──────────────────────────────────────────────────────────────────
+//  Endpoints 
 app.get('/api/buses', async (req, res) => {
   try {
     const response = await fetchBusesData();
@@ -101,7 +101,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', mensaje: 'Proxy RouteView funcionando', sesionActiva: !!sessionCookie });
 });
 
-// ── Arranque ───────────────────────────────────────────────────────────────────
+// Arranque 
 const PORT = 3000;
 app.listen(PORT, async () => {
   console.log(`✅ Servidor RouteView ejecutándose en http://localhost:${PORT}`);

@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/dark-mode.css" />
   <style>
+
+    /*  Layout principal  */
     .perfil-wrapper {
       min-height: 100vh;
       padding: 120px 20px 60px;
@@ -26,6 +28,7 @@
       .perfil-grid { grid-template-columns: 1fr; }
     }
 
+    /*  Tarjeta contenedora  */
     .card {
       background: var(--blanco);
       border-radius: var(--radio);
@@ -33,6 +36,7 @@
       padding: 28px;
     }
 
+    /*  Avatar con inicial del nombre  */
     .avatar {
       width: 80px;
       height: 80px;
@@ -62,17 +66,7 @@
       margin-bottom: 20px;
     }
 
-    .badge-uid {
-      background: var(--gris-claro);
-      border-radius: 6px;
-      padding: 8px 12px;
-      font-size: 0.78rem;
-      color: var(--gris-texto);
-      word-break: break-all;
-      margin-bottom: 20px;
-    }
-    .badge-uid strong { display: block; color: var(--azul); margin-bottom: 2px; }
-
+    /*  Filas de datos del perfil  */
     .dato-fila {
       display: flex;
       justify-content: space-between;
@@ -84,7 +78,7 @@
     .dato-fila .label { color: var(--gris-texto); }
     .dato-fila .valor { font-weight: bold; color: var(--azul); }
 
-    /* Editar nombre */
+    /*  Campo para editar el nombre  */
     .editar-grupo {
       margin-top: 20px;
       display: flex;
@@ -100,7 +94,11 @@
       color: var(--azul);
       box-sizing: border-box;
     }
-    .editar-grupo input:focus { outline: none; border-color: var(--verde); }
+    .editar-grupo input:focus {
+      outline: none;
+      border-color: var(--verde);
+    }
+
     .btn-editar {
       width: 100%;
       padding: 11px;
@@ -113,10 +111,10 @@
       font-size: 0.95rem;
       transition: background 0.2s;
     }
-    .btn-editar:hover { background: #00a678; }
+    .btn-editar:hover    { background: #00a678; }
     .btn-editar:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    /* Buscador de paradas (Geocoding API) */
+    /*  Buscador de direcciones (Geocoding API)  */
     .geocoding-grupo {
       display: flex;
       gap: 10px;
@@ -130,7 +128,11 @@
       font-size: 0.95rem;
       color: var(--azul);
     }
-    .geocoding-grupo input:focus { outline: none; border-color: var(--azul-claro); }
+    .geocoding-grupo input:focus {
+      outline: none;
+      border-color: var(--azul-claro);
+    }
+
     .btn-buscar {
       padding: 10px 18px;
       background: var(--azul);
@@ -143,9 +145,10 @@
       transition: background 0.2s;
       white-space: nowrap;
     }
-    .btn-buscar:hover { background: var(--azul-dark); }
+    .btn-buscar:hover    { background: var(--azul-dark); }
     .btn-buscar:disabled { opacity: 0.6; cursor: not-allowed; }
 
+    /*  Resultado del buscador  */
     .resultado-geocoding {
       background: var(--gris-claro);
       border-radius: 8px;
@@ -154,11 +157,11 @@
       color: var(--azul);
       display: none;
     }
-    .resultado-geocoding.visible { display: block; }
+    .resultado-geocoding.visible  { display: block; }
     .resultado-geocoding .dir-completa { font-weight: bold; margin-bottom: 6px; }
-    .resultado-geocoding .coords { color: var(--gris-texto); }
+    .resultado-geocoding .coords  { color: var(--gris-texto); }
 
-    /* Card title */
+    /*  Título de tarjeta  */
     .card-titulo {
       font-size: 1.05rem;
       font-weight: bold;
@@ -168,6 +171,7 @@
       border-bottom: 2px solid var(--gris-medio);
     }
 
+    /*  Alertas de éxito / error / info  */
     .alerta {
       padding: 10px 14px;
       border-radius: 8px;
@@ -180,6 +184,7 @@
     .alerta.info   { background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; }
     .alerta.visible { display: block; }
 
+    /*  Skeleton loader mientras carga el perfil  */
     .skeleton {
       background: linear-gradient(90deg, var(--gris-claro) 25%, var(--gris-medio) 50%, var(--gris-claro) 75%);
       background-size: 200% 100%;
@@ -188,8 +193,12 @@
       height: 16px;
       margin-bottom: 8px;
     }
-    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
 
+    /*  Botón para ir al inicio  */
     .btn-ir-inicio {
       display: block;
       width: 100%;
@@ -207,6 +216,7 @@
     }
     .btn-ir-inicio:hover { background: #1e293b; }
 
+    /*  Botón de cerrar sesión  */
     .btn-logout-perfil {
       width: 100%;
       margin-top: 20px;
@@ -221,11 +231,12 @@
       transition: background 0.2s, color 0.2s;
     }
     .btn-logout-perfil:hover { background: #e53e3e; color: var(--blanco); }
+
   </style>
 </head>
 <body>
 
-  <!-- NAVBAR -->
+  <!-- Navbar: auth.js inyecta el nombre del usuario o el botón de login según el estado de sesión. -->
   <header id="navbar">
     <div class="nav-contenido">
       <a href="index.html" class="logo" aria-label="Inicio">
@@ -243,22 +254,24 @@
     </div>
   </header>
 
-  <!-- CONTENIDO -->
   <main class="perfil-wrapper">
     <div class="perfil-grid">
 
-      <!-- Columna izquierda: datos del perfil -->
+      <!-- Columna izquierda: datos de la cuenta y edición del nombre. -->
       <div class="card">
+
+        <!-- Skeleton visible mientras se consulta el endpoint accounts:lookup. -->
         <div id="perfil-cargando">
           <div class="skeleton" style="width:80px; height:80px; border-radius:50%; margin: 0 auto 16px;"></div>
           <div class="skeleton" style="width:60%; margin: 0 auto 8px;"></div>
           <div class="skeleton" style="width:80%; margin: 0 auto;"></div>
         </div>
 
+        <!-- Contenido real del perfil, oculto hasta que Firebase responda. -->
         <div id="perfil-contenido" style="display:none;">
           <div class="avatar" id="avatar-inicial">?</div>
           <div class="perfil-nombre" id="perfil-nombre">—</div>
-          <div class="perfil-email" id="perfil-email">—</div>
+          <div class="perfil-email"  id="perfil-email">—</div>
 
           <div class="dato-fila">
             <span class="label">Cuenta creada</span>
@@ -266,10 +279,10 @@
           </div>
           <div class="dato-fila">
             <span class="label">Proveedor</span>
-            <span class="valor">Email / Contraseña</span>
+            <span class="valor">Email / Contrasena</span>
           </div>
 
-          <!-- Editar nombre — Endpoint 4: accounts:update -->
+          <!-- Endpoint 4: POST accounts:update — actualiza el displayName en Firebase. -->
           <div style="margin-top: 20px;">
             <p style="font-size: 0.85rem; color: var(--gris-texto); margin-bottom: 8px;">Cambiar nombre:</p>
             <div class="editar-grupo">
@@ -279,31 +292,31 @@
             <div class="alerta" id="alerta-nombre"></div>
           </div>
 
-          <button class="btn-logout-perfil" id="btn-cerrar-sesion">Cerrar sesión</button>
+          <a href="index.html" class="btn-ir-inicio">Ir al inicio</a>
+          <button class="btn-logout-perfil" id="btn-cerrar-sesion">Cerrar sesion</button>
         </div>
 
         <div class="alerta" id="alerta-perfil"></div>
       </div>
 
-      <!-- Columna derecha -->
+      <!-- Columna derecha: bienvenida y buscador de paradas. -->
       <div style="display: flex; flex-direction: column; gap: 24px;">
 
-        <!-- Card bienvenida / ir al inicio -->
+        <!-- Tarjeta de bienvenida con acceso directo al mapa. -->
         <div class="card" style="text-align: center; padding: 40px 28px;">
-          <div style="font-size: 3rem; margin-bottom: 16px;">🚌</div>
-          <h2 style="font-size: 1.3rem; color: #0f172a; margin-bottom: 10px;">¡Listo para empezar?</h2>
+          <h2 style="font-size: 1.3rem; color: #0f172a; margin-bottom: 10px;">Listo para empezar?</h2>
           <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 28px; line-height: 1.6;">
             Gracias por registrarte en RouteView.<br>
-            Explorá rutas, seguí buses en tiempo real y guardá tus favoritas.
+            Explora rutas, sigue buses en tiempo real y guarda tus favoritas.
           </p>
-          <a href="index.html" class="btn-ir-inicio">Ver el mapa →</a>
+          <a href="index.html" class="btn-ir-inicio">Ver el mapa</a>
         </div>
 
-        <!-- Buscador de paradas — Endpoint 5: Google Maps Geocoding API -->
+        <!-- Endpoint 5: GET maps/api/geocode/json — convierte una dirección en coordenadas. -->
         <div class="card">
-          <p class="card-titulo">📍 Buscar dirección de parada</p>
+          <p class="card-titulo">Buscar direccion de parada</p>
           <p style="font-size: 0.88rem; color: var(--gris-texto); margin-bottom: 14px;">
-            Ingresá una dirección en Costa Rica para obtener sus coordenadas exactas.
+            Ingresa una direccion en Costa Rica para obtener sus coordenadas exactas.
           </p>
           <div class="geocoding-grupo">
             <input type="text" id="input-direccion" placeholder="Ej. Alajuela, frente al parque central" />
@@ -318,14 +331,12 @@
             </div>
             <div style="margin-top: 10px;">
               <a id="geo-maps-link" href="#" target="_blank"
-                 style="color: var(--verde); font-size:0.85rem; font-weight:bold;">
-                Ver en Google Maps →
+                style="color: var(--verde); font-size:0.85rem; font-weight:bold;">
+                Ver en Google Maps
               </a>
             </div>
           </div>
         </div>
-
-
 
       </div>
     </div>
@@ -334,24 +345,25 @@
   <script type="module">
     import {
       estaAutenticado,
-      obtenerToken,
       obtenerPerfil,
       actualizarNombre,
       cerrarSesion,
       actualizarNavbar
     } from './js/auth.js';
 
-    const MAPS_API_KEY = 'AIzaSyAxnyBScS06-vUGMPbZmm0DLIPdtuxTVoI'; // La misma que usás en index.html
+    // Misma API Key de Google Maps usada en index.html.
+    const MAPS_API_KEY = 'AIzaSyAxnyBScS06-vUGMPbZmm0DLIPdtuxTVoI';
 
-    // Redirigir si no está autenticado
+    // Si no hay sesion activa, redirigir al login de inmediato.
     if (!estaAutenticado()) {
       window.location.href = 'login.html';
     }
 
     actualizarNavbar();
 
-    // ── Cargar perfil ──────────────────────────────────────────────────────────
-    // Endpoint 3: POST accounts:lookup (requiere idToken en el body)
+    //  Cargar perfil 
+    // Endpoint 3: POST accounts:lookup
+    // Envia el idToken guardado en localStorage; Firebase devuelve los datos del usuario.
     async function cargarPerfil() {
       try {
         const usuario = await obtenerPerfil();
@@ -360,13 +372,13 @@
         document.getElementById('perfil-contenido').style.display = 'block';
 
         const nombre = usuario.displayName || 'Usuario';
-        document.getElementById('perfil-nombre').textContent = nombre;
-        document.getElementById('perfil-email').textContent  = usuario.email;
+        document.getElementById('perfil-nombre').textContent  = nombre;
+        document.getElementById('perfil-email').textContent   = usuario.email;
         document.getElementById('avatar-inicial').textContent = nombre.charAt(0).toUpperCase();
-        document.getElementById('input-nombre').value = nombre;
+        document.getElementById('input-nombre').value         = nombre;
 
         const fecha = new Date(parseInt(usuario.createdAt));
-        document.getElementById('perfil-fecha').textContent = fecha.toLocaleDateString('es-CR', {
+        document.getElementById('perfil-fecha').textContent   = fecha.toLocaleDateString('es-CR', {
           year: 'numeric', month: 'long', day: 'numeric'
         });
 
@@ -378,92 +390,100 @@
 
     cargarPerfil();
 
-    // ── Actualizar nombre ──────────────────────────────────────────────────────
+    //  Actualizar nombre 
     // Endpoint 4: POST accounts:update
+    // Envia el nuevo nombre junto con el idToken; Firebase actualiza el displayName.
     document.getElementById('btn-guardar-nombre').addEventListener('click', async () => {
       const nuevoNombre = document.getElementById('input-nombre').value.trim();
       if (!nuevoNombre || nuevoNombre.length < 2) {
-        mostrarAlerta('alerta-nombre', 'Ingresá un nombre válido', 'error');
+        mostrarAlerta('alerta-nombre', 'Ingresa un nombre valido', 'error');
         return;
       }
+
       const btn = document.getElementById('btn-guardar-nombre');
-      btn.disabled = true;
-      btn.textContent = '...';
+      btn.disabled    = true;
+      btn.textContent = 'Guardando...';
+
       try {
         await actualizarNombre(nuevoNombre);
-        document.getElementById('perfil-nombre').textContent = nuevoNombre;
+        document.getElementById('perfil-nombre').textContent  = nuevoNombre;
         document.getElementById('avatar-inicial').textContent = nuevoNombre.charAt(0).toUpperCase();
-        mostrarAlerta('alerta-nombre', '✓ Nombre actualizado', 'exito');
+        mostrarAlerta('alerta-nombre', 'Nombre actualizado correctamente', 'exito');
         actualizarNavbar();
       } catch (err) {
         mostrarAlerta('alerta-nombre', err.message, 'error');
       } finally {
-        btn.disabled = false;
+        btn.disabled    = false;
         btn.textContent = 'Guardar';
       }
     });
 
-    // ── Geocoding API ──────────────────────────────────────────────────────────
+    //  Buscador de paradas (Geocoding API) 
     // Endpoint 5: GET https://maps.googleapis.com/maps/api/geocode/json
+    // Recibe una direccion en texto y devuelve latitud, longitud y la direccion formateada.
     document.getElementById('btn-geocodificar').addEventListener('click', async () => {
       const direccion = document.getElementById('input-direccion').value.trim();
       if (!direccion) {
-        mostrarAlerta('alerta-geocoding', 'Ingresá una dirección para buscar', 'error');
+        mostrarAlerta('alerta-geocoding', 'Ingresa una direccion para buscar', 'error');
         return;
       }
 
       const btn = document.getElementById('btn-geocodificar');
-      btn.disabled = true;
+      btn.disabled    = true;
       btn.textContent = 'Buscando...';
       document.getElementById('resultado-geocoding').classList.remove('visible');
       ocultarAlerta('alerta-geocoding');
 
       try {
-        const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(direccion + ', Costa Rica')}&key=${MAPS_API_KEY}&language=es&region=cr`;
+        const url  = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(direccion + ', Costa Rica')}&key=${MAPS_API_KEY}&language=es&region=cr`;
         const res  = await fetch(url);
         const data = await res.json();
 
         if (data.status !== 'OK' || data.results.length === 0) {
-          mostrarAlerta('alerta-geocoding', 'No se encontró esa dirección. Intentá ser más específico.', 'error');
+          mostrarAlerta('alerta-geocoding', 'No se encontro esa direccion. Intenta ser mas especifico.', 'error');
           return;
         }
 
-        const resultado  = data.results[0];
-        const { lat, lng } = resultado.geometry.location;
+        const resultado       = data.results[0];
+        const { lat, lng }    = resultado.geometry.location;
 
         document.getElementById('geo-direccion').textContent = resultado.formatted_address;
-        document.getElementById('geo-lat').textContent = lat.toFixed(6);
-        document.getElementById('geo-lng').textContent = lng.toFixed(6);
-        document.getElementById('geo-maps-link').href = `https://www.google.com/maps?q=${lat},${lng}`;
+        document.getElementById('geo-lat').textContent       = lat.toFixed(6);
+        document.getElementById('geo-lng').textContent       = lng.toFixed(6);
+        document.getElementById('geo-maps-link').href        = `https://www.google.com/maps?q=${lat},${lng}`;
         document.getElementById('resultado-geocoding').classList.add('visible');
 
       } catch (err) {
         mostrarAlerta('alerta-geocoding', 'Error al consultar la API de Google Maps.', 'error');
       } finally {
-        btn.disabled = false;
+        btn.disabled    = false;
         btn.textContent = 'Buscar';
       }
     });
 
-    // Enter en el buscador
+    // Permitir buscar presionando Enter en el campo de direccion.
     document.getElementById('input-direccion').addEventListener('keydown', e => {
       if (e.key === 'Enter') document.getElementById('btn-geocodificar').click();
     });
 
-    // ── Cerrar sesión ─────────────────────────────────────────────────────────
+    //  Cerrar sesion 
+    // Elimina el token del localStorage y redirige al inicio.
     document.getElementById('btn-cerrar-sesion').addEventListener('click', () => {
       cerrarSesion();
       window.location.href = 'index.html';
     });
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    // Helpers de UI 
+
+    // Muestra una alerta con el tipo indicado y la oculta automaticamente despues de 4 segundos.
     function mostrarAlerta(id, mensaje, tipo) {
       const el = document.getElementById(id);
       if (!el) return;
       el.textContent = mensaje;
-      el.className = `alerta ${tipo} visible`;
+      el.className   = `alerta ${tipo} visible`;
       setTimeout(() => { if (el) el.className = 'alerta'; }, 4000);
     }
+
     function ocultarAlerta(id) {
       const el = document.getElementById(id);
       if (el) el.className = 'alerta';
