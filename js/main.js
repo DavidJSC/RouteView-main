@@ -30,10 +30,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+<<<<<<< HEAD
     // 1. CATALOGO DE RUTAS (rutas.html)
     // Carga el catalogo desde rutas.json y lo enriquece con datos en vivo del servidor.
     // Tambien maneja los filtros de busqueda y el boton de agregar a favoritos.
 
+=======
+   
+    // 1. CATÁLOGO 
+  
+>>>>>>> 1ada48277f18f8788e60bbed57456d2f4ee1debf
     const contenedorCatalogo = document.getElementById('contenedor-catalogo-rutas');
 
     if (contenedorCatalogo) {
@@ -320,10 +326,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+<<<<<<< HEAD
     // 2. FORMULARIO DE MIS RUTAS (registro.html)
     // Maneja el formulario de registro de rutas favoritas, la lista de rutas guardadas
     // y el control de acceso: solo usuarios con sesion pueden guardar o ver sus rutas.
 
+  
+    // 2. FORMULARIO 
+   
+>>>>>>> 1ada48277f18f8788e60bbed57456d2f4ee1debf
     const formulario = document.getElementById('formulario-ruta');
 
     if (formulario) {
@@ -540,9 +551,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+<<<<<<< HEAD
 // 3. GOOGLE MAPS Y BUSES EN TIEMPO REAL
 // Esta seccion vive fuera del DOMContentLoaded porque initMap() es llamada
 // directamente por la API de Google Maps al terminar de cargar.
+=======
+
+// 3. GOOGLE MAPS & BUSES EN TIEMPO REAL
+>>>>>>> 1ada48277f18f8788e60bbed57456d2f4ee1debf
 
 let map;
 const markers      = {};
